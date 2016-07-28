@@ -17,7 +17,7 @@ exports.findAll = function (request, reply) {
     });
 };
 
-exports.find = function (request, reply) {
+exports.findByPostId = function (request, reply) {
     this.db.get('SELECT id, text, authorUsername, postId, date_created FROM comments WHERE postId = ?', [request.params.postId],
         (err, result) => {
             if (err) throw err;
@@ -42,6 +42,49 @@ exports.create = function (request, reply) {
             return reply(comment).created(uri);
         }
     );
+};
+exports.edit = function (request, reply) {
+    this.db.get('SELECT authorUsername, postId FROM comments WHERE id = ?', [request.params.commentId],
+        (err, result) => {
+            if (err) throw err;
+            if (typeof result !== 'undefined') {
+                if (request.auth.credentials.username !== result.authorUsername) {
+                    this.db.get('SELECT authorUsername FROM posts WHERE id = ?', [result.postId],
+                        (err, postResult) => {
+                            if (err) throw err;
+                            if (typeof postResult !== 'undefined') {
+                                if (request.auth.credentials.username !== postResult.authorUsername) {
+                                    return reply(Boom.unauthorized());
+                                }else{
+                                    let comment = request.payload;
+                                    this.db.run('UPDATE comments SET text = ? WHERE id = ?',
+                                        [comment.text, comment.id],
+                                        (err)=>{
+                                            if(err) throw err;
+
+                                            console.log('Updated: ', uri);
+                                            return reply(comment).updated(uri);
+                                        })
+                                }
+                            }
+                        }
+                    )
+                }else{
+                    console.log(request.params.commentId);
+                    this.db.run('DELETE FROM comments WHERE id = ?', [request.params.commentId],
+                        (err) => {
+                            if (err) throw err;
+                            console.log('Deleted: ', request.raw.req.url);
+                            return reply(`Comment ${request.params.commentId} was deleted successfully.`);
+                        }
+                    );
+                }
+
+            }
+        });
+
+
+
 };
 
 exports.remove = function (request, reply) {

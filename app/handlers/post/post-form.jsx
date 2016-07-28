@@ -21,7 +21,8 @@ export default class PostForm extends React.Component{
         if(!text){
             return ;
         }
-        this.props.onPostSubmit({text: text});
+        let receiverUsername = this.props.receiverUsername || null;
+        this.props.onPostSubmit({text: text, receiverUsername: receiverUsername});
 
         this.setState({
             text: ''
@@ -35,6 +36,7 @@ export default class PostForm extends React.Component{
                     onChange={this.handleTextChange} />
                 <input className="pull-right col-md-5 btn btn-default btn-md" type="submit" value="Post"
                     onClick={this.handleSubmit} />
+                <br />
             </form>
         );
     }

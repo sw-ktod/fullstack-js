@@ -7,7 +7,9 @@ const Posts = require('./handlers/posts.handler');
 const Comments = require('./handlers/comments.handler');
 
 module.exports = [
-
+    /**
+     * AUTH_ROUTES
+     */
     {
         method: 'GET',
         path: '/api/auth',
@@ -65,6 +67,13 @@ module.exports = [
         },
         handler: Auth.logout
     },
+    /**
+     * End of AUTH_ROUTES
+     */
+
+    /**
+     * USER_ROUTES
+     */
     {
         method: 'GET',
         path: '/api/users',
@@ -88,41 +97,11 @@ module.exports = [
     {
         method: 'GET',
         path: '/api/users/{username}',
-        handler: Users.find,
+        handler: Users.findByUsername,
         config: {
             validate: {
                 params: {
                     username: Joi.string().min(5).required()
-                }
-            },
-            auth: {
-                strategy: 'session'
-            },
-        }
-    },
-    {
-        method: 'GET',
-        path: '/api/users/{username}/posts',
-        handler: Posts.findRelatedPostsByUsername,
-        config: {
-            validate: {
-                params: {
-                    username: Joi.string().min(5).required()
-                }
-            },
-            auth: {
-                strategy: 'session'
-            },
-        }
-    },
-    {
-        method: 'POST',
-        path: '/api/users/{username}/posts',
-        handler: Posts.create,
-        config: {
-            validate: {
-                params: {
-                    username: Joi.string().min(5).required(),
                 }
             },
             auth: {
@@ -131,6 +110,29 @@ module.exports = [
         }
     },
 
+    //{
+    //    method: 'POST',
+    //    path: '/api/users/{username}/posts',
+    //    handler: Posts.create,
+    //    config: {
+    //        validate: {
+    //            params: {
+    //                username: Joi.string().min(5).required(),
+    //            }
+    //        },
+    //        auth: {
+    //            strategy: 'session'
+    //        },
+    //    }
+    //},
+
+    /**
+     * End of USER_ROUTES
+     */
+
+    /**
+     * POST_ROUTES
+     */
     {
         method: 'GET',
         path: '/api/posts',
@@ -157,13 +159,29 @@ module.exports = [
         }
     },
     {
-        method: 'Post',
+        method: 'GET',
+        path: '/api/users/{username}/posts',
+        handler: Posts.findRelatedPostsByUsername,
+        config: {
+            validate: {
+                params: {
+                    username: Joi.string().min(5).required()
+                }
+            },
+            auth: {
+                strategy: 'session'
+            },
+        }
+    },
+    {
+        method: 'POST',
         path: '/api/posts',
         handler: Posts.create,
         config: {
             validate: {
                 payload: Joi.object({
                     text: Joi.string().min(3).required(),
+                    receiverUsername: Joi.string().allow(''),
                 })
             },
             auth:{
@@ -172,9 +190,59 @@ module.exports = [
         }
     },
     {
+        method: 'PUT',
+        path: '/api/posts/{postId}',
+        handler: Posts.edit,
+        config: {
+            validate: {
+                params: {
+                    postId: Joi.number().min(1).required()
+                },
+                payload: Joi.object({
+                    text: Joi.string().min(3).required()
+                })
+            },
+            auth:{
+                strategy: 'session'
+            }
+        }
+    },
+    {
+        method: 'DELETE',
+        path: '/api/posts/{postId}',
+        handler: Posts.remove,
+        config: {
+            validate: {
+                params: {
+                    postId: Joi.number().min(1).required()
+                }
+            },
+            auth:{
+                strategy: 'session'
+            }
+        }
+    },
+    /**
+     * End of POST_ROUTES
+     */
+
+    /**
+     * COMMENT_ROUTES
+     */
+    {
+        method: 'GET',
+        path: '/api/comments',
+        handler: Comments.findAll,
+        config: {
+            auth:{
+                strategy: 'session'
+            }
+        }
+    },
+    {
         method: 'GET',
         path: '/api/posts/{postId}/comments',
-        handler: Comments.find,
+        handler: Comments.findByPostId,
         config: {
             validate: {
                 params: {
@@ -187,24 +255,14 @@ module.exports = [
         }
     },
     {
-        method: 'GET',
-        path: '/api/comments',
-        handler: Comments.findAll,
-        config: {
-            auth:{
-                strategy: 'session'
-            }
-        }
-    },
-    {
         method: 'POST',
-        path: '/api/posts/{postId}/comments',
+        path: '/api/comments',
         handler: Comments.create,
         config: {
             validate: {
                 payload: Joi.object({
                     text: Joi.string().min(1).required(),
-                    postId: Joi.number().min(1).required()
+                    postId: Joi.number().min(1).required(),
                 })
             },
             auth:{
@@ -227,6 +285,9 @@ module.exports = [
             }
         }
     },
+    /**
+     * End of COMMENT_ROUTES
+     */
 
     //{
     //    method: 'DELETE',

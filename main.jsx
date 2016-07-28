@@ -3,25 +3,48 @@ import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory } from 'react-router';
 
 import UserComponent from './app/handlers/user/user-component';
-import AuthServices from "./app/handlers/auth/authentication-component";
+import AuthenticationComponent from "./app/handlers/auth/authentication-component";
 import PostComponent from "./app/handlers/post/post-component";
+
+import UserServices from './app/handlers/user/user-services';
+import AuthenticationServices from "./app/handlers/auth/authentication-services";
+import PostServices from "./app/handlers/post/post-services";
+import CommentServices from "./app/handlers/comment/comment-services";
+
 import NavComponent from "./app/handlers/navigation/navigation-component";
+
+const AUTH_SERVICE_URL = '/api/auth';
+const USER_SERVICE_URL = '/api/users';
+const POST_SERVICE_URL = 'api/posts';
+const COMMENT_SERVICE_URL = 'api/comments';
 
 const routes = ()=>{
     return (
         <Router history={browserHistory}>
             <Route component={App}>
                 <Route path="/" component={PostComponent} />
-                <Route path="auth" component={AuthServices} />
-                <Route path="users(/:username)" component={UserComponent} />
+                <Route path="auth" component={AuthenticationComponent} />
+                <Route path="users(/:username)(/:edit)" component={UserComponent} />
         </Route>
         </Router>
     );
-}
+};
 
 class App extends React.Component{
     constructor(props){
         super(props);
+        this.authServices = new AuthenticationServices(AUTH_SERVICE_URL);
+        this.userServices = new UserServices(USER_SERVICE_URL);
+        this.postServices = new PostServices(POST_SERVICE_URL);
+        this.commentServices = new CommentServices(COMMENT_SERVICE_URL);
+    }
+    getChildContext() {
+        return {
+            authServices: this.authServices,
+            userServices: this.userServices,
+            postServices: this.postServices,
+            commentServices: this.commentServices
+        };
     }
     render(){
         return(
@@ -35,18 +58,21 @@ class App extends React.Component{
             </div>
         );
     }
-    showNotification(){
-        this.refs.notificator.success("title", "msg-body", 400)
-    }
     componentDidMount(){
-        if(!AuthServices.isAuthenticated()){
+        if(!this.authServices.isAuthenticated()){
             browserHistory.push('/auth');
         }
     }
 }
 App.propTypes = {
     children: React.PropTypes.node
-}
+};
+App.childContextTypes = {
+    authServices: React.PropTypes.object,
+    userServices: React.PropTypes.object,
+    postServices: React.PropTypes.object,
+    commentServices: React.PropTypes.object
+};
 
 ReactDOM.render(routes(), document.getElementById('app'))
 

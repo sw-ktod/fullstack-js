@@ -3,7 +3,6 @@
 import React from "react";
 import Remarkable from "remarkable";
 import { Link } from "react-router";
-import AuthServices from "../auth/authentication-component";
 
 export default class Comment extends React.Component {
     constructor(props){
@@ -29,7 +28,7 @@ export default class Comment extends React.Component {
     }
 
     render() {
-        let currentUser = AuthServices.getCookieData('user').account;
+        let currentUser = this.context.authServices.getStoredData('user').account;
         let authorLink = "/users/" + this.props.author;
         let deleteButton = (this.props.author === currentUser.username || this.props.postAuthor === currentUser.username) ?
                 (<a className="cursor-pointer pull-right" onClick={this.handleDelete}>x</a>) : '';
@@ -56,4 +55,7 @@ Comment.propTypes = {
     created: React.PropTypes.string.isRequired,
     children: React.PropTypes.any,
     onCommentDelete: React.PropTypes.func.isRequired
+};
+Comment.contextTypes = {
+    authServices: React.PropTypes.object
 };

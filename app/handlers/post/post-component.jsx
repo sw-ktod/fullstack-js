@@ -1,134 +1,108 @@
 'use strict';
 import PostForm from "./post-form";
 import PostList from "./post-list";
-import AuthService from "../auth/authentication-component";
-import $ from "jquery";
 import React from "react";
-import { browserHistory } from 'react-router';
-import errorHandler from "../error-handler";
+import errorHandler from "../error-handler"
 
 export default class PostComponent extends React.Component{
 
-    constructor(props){
-        super(props);
+    constructor(props, context){
+        super(props, context);
         this.state = {
             posts: [],
             comments: []
         };
-        this.url = '/api/posts';
         this.handlePostSubmit = this.handlePostSubmit.bind(this);
         this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
         this.handleCommentDelete = this.handleCommentDelete.bind(this);
+        this.handlePostDelete = this.handlePostDelete.bind(this);
     }
     render() {
         return  (
             <div>
             <PostForm onPostSubmit={this.handlePostSubmit}/>
             <br />
-                <PostList posts={this.state.posts} comments={this.state.comments} handleCommentSubmit={this.handleCommentSubmit} handleCommentDelete={this.handleCommentDelete}/>
+                <PostList posts={this.state.posts} comments={this.state.comments}
+                          handlePostDelete={this.handlePostDelete}
+                          handleCommentSubmit={this.handleCommentSubmit}
+                          handleCommentDelete={this.handleCommentDelete}    />
             </div>)
-}
-handlePostSubmit(post){
-    let url = this.url;
-    $.ajax({
-        method: 'POST',
-        url: url,
-        dataType: "json",
-        data: post,
-        cache: false,
-    }).done((data)=>{
-        let dataArray = this.state.posts;
-        dataArray.push(data);
-        dataArray = dataArray.sort((aPost, bPost)=>{
-            return aPost.date_created < bPost.date_created;
-        });
-        this.setState({posts: dataArray})
-    }).fail((xhr,status,err)=>{
-        errorHandler(url, xhr, err.toString())
-    })
-}
-handleCommentSubmit(comment){
-    let url = this.url + '/' + comment.postId + '/comments';
-    $.ajax({
-        method: 'POST',
-        url: url,
-        dataType: "json",
-        data: comment,
-        cache: false,
-    }).done((data)=>{
-        let dataArray = this.state.comments;
-        dataArray.push(data);
-        this.setState({data: dataArray})
-    }).fail((xhr,status,err)=>{
-        errorHandler(url, xhr, err.toString())
-    })
-}
-getPostComments(postId){
-    let url = this.url + '/' + postId + '/comments';
-    $.ajax({
-        method: 'GET',
-        url: url,
-        dataType: "json",
-        cache: false,
-    }).done((data)=>{
-        this.setState({comments: data})
-    }).fail((xhr,status,err)=>{
-        errorHandler(url, xhr, err.toString())
-    })
-}
-getComments(){
-    let url = '/api/comments';
-    $.ajax({
-        method: 'GET',
-        url: url,
-        dataType: 'json',
-        cache: false
-    }).done((data)=>{
-        this.setState({comments: data})
-    }).fail((xhr,status,err)=>{
-        errorHandler(url, xhr, err.toString())
-    })
-}
-getPosts(){
-    let url = this.url;
-    $.ajax({
-        method: 'GET',
-        url: url,
-        dataType: 'json',
-        cache: false,
-    }).done((data)=>{
-        let postArray = data.sort((aPost, bPost)=>{
-            return aPost.date_created < bPost.date_created;
-        });
-        this.setState({posts: postArray})
-    }).fail((xhr,status,err)=>{
-        errorHandler(url, xhr, err.toString())
-    })
-}
-handleCommentDelete(commentId){
-    let url = '/api/comments/' + commentId;
-    $.ajax({
-        method: 'DELETE',
-        url: url
-    }).done(()=>{
-        let comments = this.state.comments.filter((comment)=>{
-            return comment.id !== commentId;
-        });
-        this.setState({comments: comments})
-    }).fail((xhr,status,err)=>{
-        errorHandler(url, xhr, err.toString())
-    })
-}
-componentDidMount(){
-    if(AuthService.isAuthenticated()){
-        this.getPosts();
-        this.getComments();
-    }else{
-        browserHistory.push('/auth');
     }
-}
+    handlePostSubmit(post){
+        this.context.postServices.submitPost(post)
+            .then((result) => {
+                let postArray = this.state.posts;
+                postArray.push(result);
+                postArray = postArray.sort((aPost, bPost)=>{
+                    return Date.parse(aPost.date_created) < Date.parse(bPost.date_created);
+                });
+                this.setState({posts: postArray})
+            }, (err)=>{
+                errorHandler(err.status, err.statusText, this.context.authServices, this.context.router);
+        });
+    }
+    handlePostDelete(postId){
+        this.context.postServices.removePost(postId)
+            .then(()=>{
+                let postArray = this.state.posts.filter((post)=>{
+                    return post.id !== postId;
+                });
+                this.setState({posts:postArray});
+            }, (err)=>{
+                errorHandler(err.status, err.statusText, this.context.authServices, this.context.router);
+            })
+    }
+    handleCommentSubmit(comment){
+        console.log(comment);
+        this.context.commentServices.submitComment(comment)
+            .then((result) => {
+                let commentsArray = this.state.comments;
+                commentsArray.push(result);
+                this.setState({comments: commentsArray})
+            }, (err)=>{
+                errorHandler(err.status, err.statusText, this.context.authServices, this.context.router);
+        });
+    }
+
+    handleCommentDelete(commentId){
+        this.context.commentServices.deleteComment(commentId)
+            .then(()=>{
+                let comments = this.state.comments.filter((comment)=>{
+                    return comment.id !== commentId;
+                });
+                this.setState({comments: comments})
+            }, (err)=>{
+                errorHandler(err.status, err.statusText, this.context.authServices, this.context.router);
+        });
+    }
+    componentDidMount(){
+        if(this.context.authServices.isAuthenticated()){
+            this.context.postServices.getPosts()
+                .then((result)=>{
+                    let dataArray = result.sort((aPost, bPost)=>{
+                        return Date.parse(aPost.date_created) < Date.parse(bPost.date_created);
+                    });
+                    this.setState({posts: dataArray})
+                }, (err)=>{
+                    errorHandler(err.status, err.statusText, this.context.authServices, this.context.router);
+            });
+            this.context.commentServices.getComments().then((result)=>{
+                this.setState({comments: result})
+            }, (err)=>{
+                errorHandler(err.status, err.statusText, this.context.authServices, this.context.router);
+        });
+        }else{
+            this.context.router.push({pathname: '/auth'});
+        }
+    }
 }
 PostComponent.propTypes = {
     postId: React.PropTypes.number
+};
+PostComponent.contextTypes = {
+    authServices: React.PropTypes.object,
+    postServices: React.PropTypes.object,
+    commentServices: React.PropTypes.object,
+    router: React.PropTypes.object,
 };
 

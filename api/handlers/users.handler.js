@@ -16,8 +16,7 @@ exports.findAll = function (request, reply) {
         reply(results);
     });
 };
-
-exports.find = function (request, reply) {
+exports.findByUsername = function (request, reply) {
     this.db.get('SELECT id, username FROM users WHERE username = ?', [request.params.username],
         (err, result) => {
             if (err) throw err;

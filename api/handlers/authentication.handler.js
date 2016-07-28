@@ -6,7 +6,7 @@ let uuid = 1;
 
 exports.login = function (request, reply) {
     if (request.auth.isAuthenticated) {
-        return reply.redirect('/');
+        return reply(Boom.unauthorized(`Already logged in`));
     }
     let user = request.payload;
     if (!user.username || !user.password) {
@@ -20,10 +20,10 @@ exports.login = function (request, reply) {
                 const sessionId = String(++uuid);
                 request.server.app.cache.set(sessionId, {account: result}, 0, (err) => {
                     if (err) {
-                        reply(err);
+                        throw (err);
                     }
                     request.cookieAuth.set({__sess: sessionId});
-                    return reply({account: result});
+                    return reply(result);
                 });
             }
             else {
@@ -34,7 +34,7 @@ exports.login = function (request, reply) {
 
 exports.register = function (request, reply) {
     if (request.auth.isAuthenticated) {
-        return reply.redirect('/');
+        return reply(Boom.unauthorized(`Already logged in`));
     }
     let user = request.payload;
     console.log(user);
@@ -50,12 +50,12 @@ exports.register = function (request, reply) {
 };
 exports.logout = function (request, reply) {
     request.cookieAuth.clear();
-    return reply.redirect('/');
+    return reply("Successfully logged out");
 };
 exports.validateAuthentication = function (request, reply) {
     if(!request.auth.isAuthenticated) {
         request.cookieAuth.clear();
-        return reply(false);
+        return reply(Boom.unauthorized('Invalid or missing cookie'));
     }
     return reply({account: request.auth.credentials});
 }

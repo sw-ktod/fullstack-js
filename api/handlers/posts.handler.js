@@ -62,33 +62,60 @@ exports.find = function (request, reply) {
 exports.create = function (request, reply) {
     let post = request.payload;
     post.date_created = Date();
-    let receiver = request.params.username;
-    if(receiver === request.auth.credentials.username){
-        receiver = null;
+    let postReceiver = post.receiverUsername;
+    if(postReceiver === request.auth.credentials.username){
+        postReceiver = '';
     }
-
     this.db.run(`INSERT INTO posts (text, authorUsername, receiverUsername, date_created) VALUES (?, ?, ?, ?);`,
-        [post.text, request.auth.credentials.username, receiver, post.date_created],
+        [post.text, request.auth.credentials.username, postReceiver, post.date_created],
         function (err) {
             if (err) throw err;
             post.id = this.lastID;
             post.authorUsername = request.auth.credentials.username;
-            post.receiverUsername = receiver;
+            post.receiverUsername = postReceiver;
             const uri = request.raw.req.url + '/' + post.id;
             console.log('Created: ', uri);
             reply(post).created(uri);
-        });
+    });
+};
+exports.edit = function (request, reply) {
+    let post = request.payload;
+    console.log(post);
 };
 
-//exports.remove = function (request, reply) {
-//    this.db.run('DELETE FROM posts WHERE id = ?', [request.params.postId],
-//        function(err) {
-//            if(err) throw err;
-//            if (this.changes  > 0) {
-//                console.log('Deleted: ', request.raw.req.url);
-//                reply(`User ${request.params.postId} was deleted successfully.`);
-//            } else {
-//                reply(Boom.notFound(`User with Id=${request.params.postId} not found.`));
-//            }
-//        });
-//};
+exports.remove = function (request, reply) {
+    this.db.get('SELECT authorUsername, receiverUsername FROM posts WHERE id = ?', [request.params.postId],
+        (err, result)=>{
+            if(err) throw err;
+            if(result.authorUsername === request.auth.credentials.username){
+                this.db.run('DELETE FROM comments WHERE postId = ?', [request.params.postId],
+                    (err)=>{
+                        if(err) throw err;
+                        if (this.changes  > 0) {
+                            console.log('Deleted: ', request.raw.req.url);
+                        }
+                    });
+                this.db.run('DELETE FROM posts WHERE id = ?', [request.params.postId],
+                    function(err) {
+                        if(err) throw err;
+                        if (this.changes  > 0) {
+                            console.log('Deleted: ', request.raw.req.url);
+                            return reply(`Post ${request.params.postId} was deleted successfully.`);
+                        } else {
+                            return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
+                        }
+                    });
+            }else{
+                if(result.receiverUsername === request.auth.credentials.username){
+                    this.db.run('UPDATE posts SET receiverUsername = ?', [null],
+                        (err)=>{
+                            if(err) throw err;
+                            console.log('Removed link: ', request.raw.req.url);
+                            return reply(`Post ${request.params.postId} link was removed successfully.`);
+                    });
+                }else{
+                return reply(Boom.forbidden('You can not remove posts you do not own'))}
+            }
+        });
+
+};

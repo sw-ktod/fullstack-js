@@ -40,7 +40,7 @@ module.exports = {
         inline: true,
         stats: 'normal',
         host: process.env.HOST || 'localhost',
-        port: process.env.PORT || 3000,
+        port: process.env.PORT || 4000,
         proxy: {
             '/api/*':{
                 target: 'http://localhost:9000/',

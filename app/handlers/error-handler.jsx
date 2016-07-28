@@ -1,7 +1,15 @@
-import AuthServices from "./auth/authentication-component"
-module.exports = (url, xhr, message) => {
-    if(xhr.status === 401){
-        AuthServices.validateAuthentication()
+module.exports = (status, message, auth, router) => {
+    if(status === 401){
+        auth.validateAuthentication()
+            .then((response)=>{
+                auth.storeData('user', response);
+                router.push({pathname:'/'});
+            }, (err)=>{
+                if(err.status === 401){
+                    auth.removeStoredData('user');
+                    router.push({pathname:'/auth'});
+                }
+        })
     }
-    console.error(url, xhr.status, message);
-}
+    console.log(status, message);
+};

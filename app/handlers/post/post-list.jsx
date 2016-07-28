@@ -12,24 +12,26 @@ export default class PostList extends React.Component{
     }
     render() {
         let postComments = [];
-        let postNodes = this.props.posts.map((post)=>{
-            if(this.props.comments){
-                postComments = this.props.comments.filter((comment)=>{
+
+        let postNodes = this.props.posts.map((post)=> {
+            if (this.props.comments) {
+                postComments = this.props.comments.filter((comment)=> {
                     return comment.postId === post.id;
-                })
+                });
+
+                return (
+                    <div className="jumbotron" key={post.id}>
+                        <Post author={post.authorUsername} postId={post.id} created={post.date_created}
+                              receiver={post.receiverUsername} onPostDelete={this.props.handlePostDelete}>
+                            {post.text}
+                        </Post>
+                        <CommentList postAuthor={post.authorUsername} data={postComments}
+                                     onCommentDelete={this.props.handleCommentDelete}/>
+                        <CommentForm onCommentSubmit={this.props.handleCommentSubmit} postId={post.id}/>
+                    </div>
+                );
             }
-
-            return (
-                <div className="jumbotron" key={post.id}>
-                    <Post author={post.authorUsername} postId={post.id} created={post.date_created} receiver={post.receiverUsername}/*handleCommentDelete={this.props.onCommentDelete}*/>
-                        {post.text}
-                    </Post>
-                    <CommentList postAuthor={post.authorUsername} data={postComments} onCommentDelete={this.props.handleCommentDelete}/>
-                    <CommentForm onCommentSubmit={this.props.handleCommentSubmit} postId={post.id} />
-                </div>
-            );
         });
-
         return (
             <div className="postList">
                 {postNodes}
@@ -56,9 +58,8 @@ PostList.propTypes = {
         })
     ),
     handleCommentSubmit: React.PropTypes.func,
-    handleCommentDelete: React.PropTypes.func
-
-
+    handleCommentDelete: React.PropTypes.func,
+    handlePostDelete: React.PropTypes.func
     //onCommentDelete: React.PropTypes.func,
 };
 
