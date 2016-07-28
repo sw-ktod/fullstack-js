@@ -2,16 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory } from 'react-router';
 
-import UserComponent from '../handlers/user/user-component';
-import AuthenticationComponent from "../handlers/auth/authentication-component";
-import PostComponent from "../handlers/post/post-component";
+import UserComponent from '../components/user/user-component';
+import AuthenticationComponent from "../components/auth/authentication-component";
+import PostComponent from "../components/post/post-component";
 
-import UserServices from '../handlers/user/user-services';
-import AuthenticationServices from "../handlers/auth/authentication-services";
-import PostServices from "../handlers/post/post-services";
-import CommentServices from "../handlers/comment/comment-services";
+import UserServices from '../services/user-services';
+import AuthenticationServices from "../services/authentication-services";
+import PostServices from "../services/post-services";
+import CommentServices from "../services/comment-services";
 
-import NavComponent from "../handlers/navigation/navigation-component";
+import NavComponent from "../components/navigation/navigation-component";
 
 const AUTH_SERVICE_URL = '/api/auth';
 const USER_SERVICE_URL = '/api/users';

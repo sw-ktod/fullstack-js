@@ -49,7 +49,7 @@ export default class NavigationComponent extends React.Component{
                                     <Link to={linkToUser}> {user.account.username} </Link>
                                 </li>
                                 <li>
-                                    <Link to={linkToUserEdit}> Edit Profile </Link>
+                                    <Link to={linkToUserEdit}> Profile </Link>
                                 </li>
                                 <li className="divider"/>
                                 <li>
