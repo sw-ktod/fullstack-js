@@ -178,7 +178,7 @@ export default class UserComponent extends React.Component {
     }
 
 
-    componentWillMount() {
+    componentDidMount() {
         if (!this.context.authServices.isAuthenticated()) {
             this.context.router.push('/auth');
         }

@@ -29,9 +29,9 @@ module.exports = [
             validate: {
                 payload: Joi.object({
                     //id: Joi.number().integer().min(1).optional(),
-                    username: Joi.string().min(5).required(),
-                    password: Joi.string().min(5).required(),
-                    confirmPassword: Joi.string().min(5).required(),
+                    username: Joi.string().alphanum().min(5).max(50).required(),
+                    password: Joi.string().min(5).max(50).required(),
+                    confirmPassword: Joi.string().min(5).max(50).required(),
                 })
             },
             auth: {
@@ -48,8 +48,8 @@ module.exports = [
             validate: {
                 payload: Joi.object({
                     //id: Joi.number().integer().min(1).optional(),
-                    username: Joi.string().min(5).required(),
-                    password: Joi.string().min(5).required(),
+                    username: Joi.string().alphanum().min(5).max(50).required(),
+                    password: Joi.string().min(5).max(50).required(),
                 })
             },
             auth: {
@@ -64,9 +64,9 @@ module.exports = [
         config: {
             validate: {
                 payload: Joi.object({
-                    newPassword: Joi.string().min(5).required(),
-                    confirmPassword: Joi.string().min(5).required(),
-                    password: Joi.string().min(5).required()
+                    newPassword: Joi.string().min(5).max(50).required(),
+                    confirmPassword: Joi.string().min(5).max(50).required(),
+                    password: Joi.string().min(5).max(50).required()
                 })
             },
             auth: {
@@ -119,7 +119,28 @@ module.exports = [
         config: {
             validate: {
                 params: {
-                    username: Joi.string().min(5).required()
+                    username: Joi.string().alphanum().min(5).max(50).required()
+                }
+            },
+            auth: {
+                strategy: 'session'
+            },
+        }
+    },
+    {
+        method: 'PUT',
+        path: '/api/users/{username}',
+        handler: Users.edit,
+        config: {
+            validate: {
+                params: {
+                    username: Joi.string().alphanum().min(5).max(50).required()
+                },
+                payload: {
+                    firstName: Joi.string(),
+                    lastName: Joi.string(),
+                    email: Joi.string().email(),
+                    dateOfBirth:
                 }
             },
             auth: {
@@ -183,7 +204,7 @@ module.exports = [
         config: {
             validate: {
                 params: {
-                    username: Joi.string().min(5).required()
+                    username: Joi.string().alphanum().min(5).max(50).required()
                 }
             },
             auth: {
@@ -198,8 +219,8 @@ module.exports = [
         config: {
             validate: {
                 payload: Joi.object({
-                    text: Joi.string().min(3).required(),
-                    receiverUsername: Joi.string().allow(''),
+                    text: Joi.string().min(2).required(),
+                    receiverUsername: Joi.string().alphanum().allow(''),
                 })
             },
             auth: {
@@ -217,7 +238,7 @@ module.exports = [
                     postId: Joi.number().min(1).required()
                 },
                 payload: Joi.object({
-                    text: Joi.string().min(3).required()
+                    text: Joi.string().min(2).required()
                 })
             },
             auth: {
@@ -279,7 +300,7 @@ module.exports = [
         config: {
             validate: {
                 payload: Joi.object({
-                    text: Joi.string().min(1).required(),
+                    text: Joi.string().min(2).required(),
                     postId: Joi.number().min(1).required(),
                 })
             },
