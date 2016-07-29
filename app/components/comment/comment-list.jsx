@@ -3,14 +3,20 @@
 import React from "react";
 import Comment from "./comment";
 
-export default class CommentList extends React.Component{
-    constructor(props){
+export default class CommentList extends React.Component {
+    constructor(props) {
         super(props);
     }
+
     render() {
-        let commentNodes = this.props.data.map((comment)=>{
+        let commentNodes = this.props.data.map((comment)=> {
             return (
-                <Comment postAuthor={this.props.postAuthor} author={comment.authorUsername} key={comment.id} commentId={comment.id} created={comment.date_created} onCommentDelete={this.props.onCommentDelete}>
+                <Comment postAuthor={this.props.postAuthor}
+                         author={comment.authorUsername}
+                         key={comment.id}
+                         commentId={comment.id}
+                         created={comment.date_created}
+                         onCommentDelete={this.props.onCommentDelete}>
                     {comment.text}
                 </Comment>
             );

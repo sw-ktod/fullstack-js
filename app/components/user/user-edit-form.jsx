@@ -41,7 +41,7 @@ export default class UserEditForm extends React.Component {
         let email = this.state.email.trim();
         let dateOfBirth = this.state.dateOfBirth.trim();
 
-        this.props.handleUserEdit({firstName: firstName, lastName: lastName, email: email, dateOfBirth: dateOfBirth});
+        this.props.handleUserEdit({username: this.props.user.username,firstName: firstName, lastName: lastName, email: email, dateOfBirth: dateOfBirth})
 
         this.setState({
             firstName: '',

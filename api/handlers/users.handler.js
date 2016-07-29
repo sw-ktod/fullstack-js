@@ -30,6 +30,9 @@ exports.findByUsername = function (request, reply) {
         }
     );
 };
+exports.edit = function (request, reply){
+    reply(request.auth.credentials);
+};
 exports.me = function (request, reply) {
     reply(request.auth.credentials);
 };

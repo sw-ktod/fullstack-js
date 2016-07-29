@@ -14,10 +14,6 @@ export default class UserComponent extends React.Component {
             comments: [],
             mode: 'default'
         };
-        this.handlePostSubmit = this.handlePostSubmit.bind(this);
-        this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
-        this.handleCommentDelete = this.handleCommentDelete.bind(this);
-        this.handlePostDelete = this.handlePostDelete.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleUserEdit = this.handleUserEdit.bind(this);
         this.setMode = this.setMode.bind(this);
@@ -31,10 +27,6 @@ export default class UserComponent extends React.Component {
                 <div>
                     <UserPage mode={this.state.mode} user={this.state.user}
                               posts={this.state.posts} comments={this.state.comments}
-                              handlePostSubmit={this.handlePostSubmit}
-                              handleCommentSubmit={this.handleCommentSubmit}
-                              handleCommentDelete={this.handleCommentDelete}
-                              handlePostDelete={this.handlePostDelete}
                               handleUserEdit={this.handleUserEdit}
                               handlePasswordChange={this.handlePasswordChange}/>
                 </div>
@@ -67,55 +59,6 @@ export default class UserComponent extends React.Component {
             }, (err)=> {
                 this.context.errorHandler.alertError(err);
             })
-    }
-
-    handlePostSubmit(post) {
-        this.context.postServices.submitPost(post)
-            .then((result) => {
-                let postArray = this.state.posts;
-                postArray.push(result);
-                postArray = postArray.sort((aPost, bPost)=> {
-                    return Date.parse(aPost.date_created) < Date.parse(bPost.date_created);
-                });
-                this.setState({posts: postArray})
-            }, (err)=> {
-                this.context.errorHandler.alertError(err);
-            });
-    }
-
-    handlePostDelete(postId) {
-        this.context.postServices.removePost(postId)
-            .then(()=> {
-                let postArray = this.state.posts.filter((post)=> {
-                    return post.id !== postId;
-                });
-                this.setState({posts: postArray});
-            }, (err)=> {
-                this.context.errorHandler.alertError(err);
-            })
-    }
-
-    handleCommentSubmit(comment) {
-        this.context.commentServices.submitComment(comment)
-            .then((result) => {
-                let commentsArray = this.state.comments;
-                commentsArray.push(result);
-                this.setState({comments: commentsArray})
-            }, (err)=> {
-                this.context.errorHandler.alertError(err);
-            });
-    }
-
-    handleCommentDelete(commentId) {
-        this.context.commentServices.deleteComment(commentId)
-            .then(()=> {
-                let comments = this.state.comments.filter((comment)=> {
-                    return comment.id !== commentId;
-                });
-                this.setState({comments: comments})
-            }, (err)=> {
-                this.context.errorHandler.alertError(err);
-            });
     }
 
     setMode(mode) {

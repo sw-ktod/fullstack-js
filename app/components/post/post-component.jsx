@@ -12,9 +12,8 @@ export default class PostComponent extends React.Component {
             comments: []
         };
         this.handlePostSubmit = this.handlePostSubmit.bind(this);
-        this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
-        this.handleCommentDelete = this.handleCommentDelete.bind(this);
         this.handlePostDelete = this.handlePostDelete.bind(this);
+        this.getUserRelatedPosts = this.getUserRelatedPosts.bind(this);
     }
 
     render() {
@@ -23,13 +22,32 @@ export default class PostComponent extends React.Component {
                 <PostForm onPostSubmit={this.handlePostSubmit}/>
                 <br />
                 <PostList posts={this.state.posts} comments={this.state.comments}
-                          handlePostDelete={this.handlePostDelete}
-                          handleCommentSubmit={this.handleCommentSubmit}
-                          handleCommentDelete={this.handleCommentDelete}/>
+                          handlePostDelete={this.handlePostDelete}/>
             </div>)
     }
-
+    getUserRelatedPosts(username){
+        this.context.postServices.getUserRelatedPosts(username)
+            .then((response)=> {
+                let dataArray = response.sort((aPost, bPost)=> {
+                    return Date.parse(aPost.date_created) < Date.parse(bPost.date_created);
+                });
+                this.setState({posts: dataArray})
+            }, (err)=> {
+                this.context.errorHandler.alertError(err);
+            });
+        this.context.commentServices.getComments()
+            .then((response)=> {
+                this.setState({comments: response});
+            }, (err)=> {
+                this.context.errorHandler.alertError(err);
+            });
+    }
     handlePostSubmit(post) {
+        let currentUser = this.context.authServices.getStoredData('user').account;
+        let receiverUsername = this.props.username;
+        if(receiverUsername && receiverUsername !== currentUser.username){
+            post.receiverUsername = receiverUsername;
+        }
         this.context.postServices.submitPost(post)
             .then((result) => {
                 let postArray = this.state.posts;
@@ -55,52 +73,33 @@ export default class PostComponent extends React.Component {
             })
     }
 
-    handleCommentSubmit(comment) {
-        this.context.commentServices.submitComment(comment)
-            .then((result) => {
-                let commentsArray = this.state.comments;
-                commentsArray.push(result);
-                this.setState({comments: commentsArray})
-            }, (err)=> {
-                this.context.errorHandler.alertError(err);
-            });
-    }
-
-    handleCommentDelete(commentId) {
-        this.context.commentServices.deleteComment(commentId)
-            .then(()=> {
-                let comments = this.state.comments.filter((comment)=> {
-                    return comment.id !== commentId;
-                });
-                this.setState({comments: comments})
-            }, (err)=> {
-                this.context.errorHandler.alertError(err);
-            });
-    }
-
     componentDidMount() {
         if (this.context.authServices.isAuthenticated()) {
-            this.context.postServices.getPosts()
-                .then((result)=> {
-                    let dataArray = result.sort((aPost, bPost)=> {
-                        return Date.parse(aPost.date_created) < Date.parse(bPost.date_created);
+            if(this.props.username){
+                this.getUserRelatedPosts(this.props.username);
+            }else{
+                this.context.postServices.getPosts()
+                    .then((result)=> {
+                        let dataArray = result.sort((aPost, bPost)=> {
+                            return Date.parse(aPost.date_created) < Date.parse(bPost.date_created);
+                        });
+                        this.setState({posts: dataArray})
+                    }, (err)=> {
+                        this.context.errorHandler.alertError(err);
                     });
-                    this.setState({posts: dataArray})
+                this.context.commentServices.getComments().then((result)=> {
+                    this.setState({comments: result})
                 }, (err)=> {
                     this.context.errorHandler.alertError(err);
                 });
-            this.context.commentServices.getComments().then((result)=> {
-                this.setState({comments: result})
-            }, (err)=> {
-                this.context.errorHandler.alertError(err);
-            });
+            }
         } else {
             this.context.router.push({pathname: '/auth'});
         }
     }
 }
 PostComponent.propTypes = {
-    postId: React.PropTypes.number
+    username: React.PropTypes.string
 };
 PostComponent.contextTypes = {
     authServices: React.PropTypes.object,

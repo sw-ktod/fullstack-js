@@ -2,9 +2,9 @@
 
 import React from "react";
 import Post from "./post";
-import CommentForm from "../comment/comment-form";
-import CommentList from "../comment/comment-list";
-//import CommentServices from "../comment/comment-services";
+//import CommentForm from "../comment/comment-form";
+//import CommentList from "../comment/comment-list";
+import CommentComponent from "../comment/comment-component";
 
 export default class PostList extends React.Component {
     constructor(props) {
@@ -19,16 +19,14 @@ export default class PostList extends React.Component {
                 postComments = this.props.comments.filter((comment)=> {
                     return comment.postId === post.id;
                 });
-
                 return (
                     <div className="jumbotron" key={post.id}>
                         <Post author={post.authorUsername} postId={post.id} created={post.date_created}
                               receiver={post.receiverUsername} onPostDelete={this.props.handlePostDelete}>
                             {post.text}
                         </Post>
-                        <CommentList postAuthor={post.authorUsername} data={postComments}
-                                     onCommentDelete={this.props.handleCommentDelete}/>
-                        <CommentForm onCommentSubmit={this.props.handleCommentSubmit} postId={post.id}/>
+                        <CommentComponent postAuthor={post.authorUsername} postComments={postComments}
+                                          postId={post.id}/>
                     </div>
                 );
             }

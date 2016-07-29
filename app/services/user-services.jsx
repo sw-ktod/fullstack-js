@@ -47,7 +47,7 @@ export default class UserServices {
     }
 
     edit(data) {
-        let url = this.url;
+        let url = this.url + '/' + data.username;
         return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'PUT',

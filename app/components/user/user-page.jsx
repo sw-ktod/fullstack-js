@@ -4,8 +4,7 @@ import React from "react";
 import User from "./user";
 import PasswordChangeForm from "./password-change-form";
 import UserEditForm from "./user-edit-form";
-import PostList from "../post/post-list";
-import PostForm from "../post/post-form";
+import PostComponent from "../post/post-component";
 
 export default class UserPage extends React.Component {
     constructor(props) {
@@ -36,13 +35,7 @@ export default class UserPage extends React.Component {
                 <User username={this.props.user.username} userId={this.props.user.id}/>
 
                 <div className="userRelatedPosts">
-                    <PostForm onPostSubmit={this.props.handlePostSubmit} receiverUsername={this.props.user.username}/>
-                    <br />
-                    <PostList posts={this.props.posts} comments={this.props.comments}
-                              handleCommentSubmit={this.props.handleCommentSubmit}
-                              handleCommentDelete={this.props.handleCommentDelete}
-                              handlePostDelete={this.props.handlePostDelete}
-                        />
+                    <PostComponent username={this.props.user.username}/>
                 </div>
             </div>
         );
@@ -53,29 +46,8 @@ UserPage.propTypes = {
         id: React.PropTypes.number,
         username: React.PropTypes.string
     }),
-    posts: React.PropTypes.arrayOf(
-        React.PropTypes.shape({
-            id: React.PropTypes.number.isRequired,
-            authorUsername: React.PropTypes.string.isRequired,
-            receiverUsername: React.PropTypes.string,
-            text: React.PropTypes.string.isRequired,
-            date_created: React.PropTypes.string.isRequired
-        })
-    ),
-    comments: React.PropTypes.arrayOf(
-        React.PropTypes.shape({
-            id: React.PropTypes.number.isRequired,
-            authorUsername: React.PropTypes.string.isRequired,
-            text: React.PropTypes.string.isRequired,
-            date_created: React.PropTypes.string.isRequired
-        })
-    ),
     mode: React.PropTypes.string.isRequired,
 
-    handlePostSubmit: React.PropTypes.func.isRequired,
-    handlePostDelete: React.PropTypes.func.isRequired,
-    handleCommentSubmit: React.PropTypes.func.isRequired,
-    handleCommentDelete: React.PropTypes.func.isRequired,
     handlePasswordChange: React.PropTypes.func.isRequired,
     handleUserEdit: React.PropTypes.func.isRequired,
 

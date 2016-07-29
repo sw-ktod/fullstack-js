@@ -59,6 +59,7 @@ export default class NavigationComponent extends React.Component {
                                     <Link to={linkToUserEdit}> Edit profile </Link>
                                 </li>
                                 <li className="divider"/>
+                                <li className="divider"/>
                                 <li>
                                     <Link to={linkToPasswordEditForm}> Change Password </Link>
                                 </li>

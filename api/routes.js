@@ -137,10 +137,10 @@ module.exports = [
                     username: Joi.string().alphanum().min(5).max(50).required()
                 },
                 payload: {
-                    firstName: Joi.string(),
-                    lastName: Joi.string(),
-                    email: Joi.string().email(),
-                    dateOfBirth:
+                    firstName: Joi.string().max(50),
+                    lastName: Joi.string().max(50),
+                    email: Joi.string().email().max(300),
+                    dateOfBirth: Joi.string()
                 }
             },
             auth: {
