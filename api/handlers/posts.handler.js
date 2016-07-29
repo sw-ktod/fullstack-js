@@ -11,7 +11,7 @@ exports.findAll = function (request, reply) {
         sqlQuery += ' WHERE authorUsername = ?';
         qParams.push(request.query.author);
     }
-    this.db.all(sqlQuery, qParams, (err, results) => {
+    this.db.all(sqlQuery, qParams, function (err, results) {
         if (err) throw err;
         reply(results);
     });
@@ -23,7 +23,7 @@ exports.findRelatedPostsByUsername = function (request, reply) {
         'OR receiverUsername = ? ' +
         'OR id IN (SELECT postId FROM comments WHERE authorUsername = ?)',
         [request.params.username, request.params.username, request.params.username],
-        (err, result)=> {
+        function (err, result) {
             if (err) throw err;
             if (typeof result !== 'undefined') {
                 reply(result);
@@ -37,7 +37,7 @@ exports.findRelatedPostsByUsername = function (request, reply) {
 
 exports.find = function (request, reply) {
     this.db.get('SELECT id, text, authorUsername, receiverUsername, date_created FROM posts WHERE id = ?', [request.params.postId],
-        (err, result) => {
+        function (err, result) {
             if (err) throw err;
             if (typeof result !== 'undefined') {
                 reply(result);
@@ -74,39 +74,62 @@ exports.edit = function (request, reply) {
 };
 
 exports.remove = function (request, reply) {
-    this.db.get('SELECT authorUsername, receiverUsername FROM posts WHERE id = ?', [request.params.postId],
-        (err, result)=> {
-            if (err) throw err;
-            if (result.authorUsername === request.auth.credentials.username) {
-                this.db.run('DELETE FROM comments WHERE postId = ?', [request.params.postId],
-                    (err)=> {
-                        if (err) throw err;
-                        if (this.changes > 0) {
-                            console.log('Deleted: ', request.raw.req.url);
-                        }
-                    });
-                this.db.run('DELETE FROM posts WHERE id = ?', [request.params.postId],
-                    function (err) {
-                        if (err) throw err;
-                        if (this.changes > 0) {
-                            console.log('Deleted: ', request.raw.req.url);
-                            return reply(`Post ${request.params.postId} was deleted successfully.`);
-                        } else {
-                            return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
-                        }
-                    });
-            } else {
-                if (result.receiverUsername === request.auth.credentials.username) {
-                    this.db.run('UPDATE posts SET receiverUsername = ?', [null],
-                        (err)=> {
+    if (request.auth.credentials.role === 'admin') {
+        this.db.run('DELETE FROM comments WHERE postId = ?', [request.params.postId],
+            function (err) {
+                if (err) throw err;
+                if (this.changes > 0) {
+                    console.log('Deleted: ', request.raw.req.url);
+                }
+            });
+        this.db.run('DELETE FROM posts WHERE id = ?', [request.params.postId],
+            function (err) {
+                if (err) throw err;
+                if (this.changes > 0) {
+                    console.log('Deleted: ', request.raw.req.url);
+                    return reply(`Post ${request.params.postId} was deleted successfully.`);
+                } else {
+                    return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
+                }
+            });
+    } else {
+        this.db.get('SELECT authorUsername, receiverUsername FROM posts WHERE id = ?', [request.params.postId],
+            (err, result)=> {
+                if (err) throw err;
+                if (result.authorUsername === request.auth.credentials.username) {
+                    this.db.run('DELETE FROM comments WHERE postId = ?', [request.params.postId],
+                        function (err) {
                             if (err) throw err;
-                            console.log('Removed link: ', request.raw.req.url);
-                            return reply(`Post ${request.params.postId} link was removed successfully.`);
+                            if (this.changes > 0) {
+                                console.log('Deleted: ', request.raw.req.url , ' comments');
+                            }
+                        });
+                    this.db.run('DELETE FROM posts WHERE id = ?', [request.params.postId],
+                        function (err) {
+                            if (err) throw err;
+                            if (this.changes > 0) {
+                                console.log('Deleted: ', request.raw.req.url);
+                                return reply(`Post ${request.params.postId} was deleted successfully.`);
+                            }
+                            return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
+
                         });
                 } else {
-                    return reply(Boom.forbidden('You can not remove posts you do not own'))
+                    if (result.receiverUsername === request.auth.credentials.username) {
+                        this.db.run('UPDATE posts SET receiverUsername = ?', [null],
+                            function (err) {
+                                if (err) throw err;
+                                if (this.changes > 0) {
+                                    console.log('Removed link: ', request.raw.req.url);
+                                    return reply(`Post ${request.params.postId} link was removed successfully.`);
+                                }
+                                return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
+                            });
+                    } else {
+                        return reply(Boom.forbidden('You can not remove posts you do not own'))
+                    }
                 }
-            }
-        });
+            });
+    }
 
 };

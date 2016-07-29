@@ -12,11 +12,10 @@ export default class UserComponent extends React.Component {
             user: undefined,
             posts: [],
             comments: [],
-            mode: 'default'
+            mode: ''
         };
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleUserEdit = this.handleUserEdit.bind(this);
-        this.setMode = this.setMode.bind(this);
         this.populatePage = this.populatePage.bind(this);
 
     }
@@ -49,38 +48,39 @@ export default class UserComponent extends React.Component {
                 console.log(result);
             }, (err)=> {
                 this.context.errorHandler.alertError(err);
-            })
+            });
     }
 
     handleUserEdit(data) {
-        this.context.userServices.edit(data)
+        this.context.userServices.edit(this.state.user.username, data)
             .then((result)=> {
+                let user = this.context.authServices.getStoredData('user').account;
+                let role = user.role;
+                let editedUser = result;
+                if(role){
+                    editedUser.role = role;
+                }
+                this.context.authServices.storeData('user', {account: editedUser});
                 console.log(result);
             }, (err)=> {
                 this.context.errorHandler.alertError(err);
-            })
-    }
-
-    setMode(mode) {
-        this.setState({mode: mode});
+            });
     }
 
     populatePage(params) {
         /**
          * User page
          */
+        this.setState({mode: params.mode} || '');
+
         if (params.username) {
             this.context.userServices.getUserByUsername(params.username)
                 .then((response)=> {
                     this.setState({user: response});
-
                     /**
                      * Continuing after we've had the user object
                      */
-                    if (params.mode) {
-                        this.setMode(params.mode);
-                    } else {
-                        this.setMode('default');
+                    if (!this.state.mode) {
                         this.context.postServices.getUserRelatedPosts(params.username)
                             .then((response)=> {
                                 let dataArray = response.sort((aPost, bPost)=> {

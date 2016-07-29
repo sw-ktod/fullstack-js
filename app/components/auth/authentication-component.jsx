@@ -25,6 +25,9 @@ export default class AuthenticationComponent extends React.Component {
     onUserLogin(user) {
         this.context.authServices.userLogin(user)
             .then((result)=> {
+                if(result.role < 1){
+                    delete result.role;
+                }
                 this.context.authServices.storeData('user', {account: result});
                 if (!result.email) {
                     this.context.router.push({pathname: '/users/' + result.username + '/edit'});
@@ -44,6 +47,9 @@ export default class AuthenticationComponent extends React.Component {
                 this.context.errorHandler.alertError(err);
             });
     }
+
+    //grandAdmin
+    //removeAdmin
 
     componentDidMount() {
         if (this.context.authServices.isAuthenticated()) {

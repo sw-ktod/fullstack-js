@@ -5,6 +5,7 @@ export default class ErrorHandler {
     }
 
     alertError(error) {
+        console.log(error);
         if (error.status === 401) {
             this.auth.validateAuthentication()
                 .then((response)=> {

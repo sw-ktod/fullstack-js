@@ -2,6 +2,7 @@
 
 const Boom = require('boom');
 const md5 = require('md5');
+const initialRole = 0;
 let uuid = 1;
 
 exports.login = function (request, reply) {
@@ -12,7 +13,7 @@ exports.login = function (request, reply) {
     if (!user.username || !user.password) {
         reply(Boom.badRequest(`Missing username or password`));
     }
-    this.db.get('SELECT id, username FROM users WHERE (username = ? AND password = ?)',
+    this.db.get('SELECT id, username,firstName, lastName, email, dateOfBirth, role FROM users WHERE (username = ? AND password = ?)',
         [user.username, md5(user.password.trim())],
         function (err, result) {
             if (err) throw err;
@@ -51,8 +52,8 @@ exports.register = function (request, reply) {
             if (result !== undefined) {
                 return reply(Boom.badRequest('Username alredy exists'));
             }
-            this.db.run(`INSERT INTO users (username, password) VALUES (?, ?);`,
-                [username, md5(password)],
+            this.db.run(`INSERT INTO users (username, password, role) VALUES (?, ?, ?);`,
+                [username, md5(password), initialRole],
                 function (err) {
                     if (err) throw err;
                     let user = {

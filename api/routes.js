@@ -302,6 +302,7 @@ module.exports = [
                 payload: Joi.object({
                     text: Joi.string().min(2).required(),
                     postId: Joi.number().min(1).required(),
+                    commentId: Joi.number().min(1),
                 })
             },
             auth: {

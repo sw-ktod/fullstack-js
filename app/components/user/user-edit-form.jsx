@@ -41,14 +41,7 @@ export default class UserEditForm extends React.Component {
         let email = this.state.email.trim();
         let dateOfBirth = this.state.dateOfBirth.trim();
 
-        this.props.handleUserEdit({username: this.props.user.username,firstName: firstName, lastName: lastName, email: email, dateOfBirth: dateOfBirth})
-
-        this.setState({
-            firstName: '',
-            lastName: '',
-            email: '',
-            dateOfBirth: '',
-        });
+        this.props.handleUserEdit({firstName: firstName, lastName: lastName, email: email, dateOfBirth: dateOfBirth});
     }
 
     render() {
@@ -63,23 +56,23 @@ export default class UserEditForm extends React.Component {
                 </div>
                 <div className="form-group">
                     <label className="control-label" htmlFor="firstName">First name </label>
-                    <input className="input-sm form-control" type="text" value={this.state.firstName}
+                    <input className="input-sm form-control" type="text" value={this.state.firstName || ''}
                            id="firstName"
                            onChange={this.handleFirstNameChange}/>
                 </div>
                 <div className="form-group">
                     <label className="control-label" htmlFor="lastName">Last name </label>
-                    <input className="input-sm form-control" type="text" value={this.state.lastName} id="lastName"
+                    <input className="input-sm form-control" type="text" value={this.state.lastName  || ''} id="lastName"
                            onChange={this.handleLastNameChange}/>
                 </div>
                 <div className="form-group">
                     <label className="control-label" htmlFor="email">Email </label>
-                    <input className="input-sm form-control" type="text" value={this.state.email} id="email"
+                    <input className="input-sm form-control" type="text" value={this.state.email  || ''} id="email"
                            onChange={this.handleEmailChange}/>
                 </div>
                 <div className="form-group">
                     <label className="control-label" htmlFor="dateOfBirth">Date of birth </label>
-                    <input className="input-sm form-control" type="date" value={this.state.dateOfBirth} id="dateOfBirth"
+                    <input className="input-sm form-control" type="date" value={this.state.dateOfBirth  || ''} id="dateOfBirth"
                            onChange={this.handleDateOfBirthChange}/>
                 </div>
 
@@ -97,8 +90,7 @@ export default class UserEditForm extends React.Component {
             dateOfBirth: this.props.user.dateOfBirth,
         })
     }
-
-    componentDidMount() {
+    componentDidMount(){
         this.populate();
     }
 }

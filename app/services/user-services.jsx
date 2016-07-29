@@ -45,9 +45,8 @@ export default class UserServices {
                 .fail(reject);
         });
     }
-
-    edit(data) {
-        let url = this.url + '/' + data.username;
+    edit(username, data) {
+        let url = this.url + '/' + username;
         return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'PUT',

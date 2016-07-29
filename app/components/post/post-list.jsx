@@ -21,11 +21,10 @@ export default class PostList extends React.Component {
                 });
                 return (
                     <div className="jumbotron" key={post.id}>
-                        <Post author={post.authorUsername} postId={post.id} created={post.date_created}
-                              receiver={post.receiverUsername} onPostDelete={this.props.handlePostDelete}>
+                        <Post post={post} onPostDelete={this.props.handlePostDelete}>
                             {post.text}
                         </Post>
-                        <CommentComponent postAuthor={post.authorUsername} postComments={postComments}
+                        <CommentComponent postAuthor={post.authorUsername} comments={postComments}
                                           postId={post.id}/>
                     </div>
                 );

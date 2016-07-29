@@ -23,10 +23,11 @@ const db = new Sqlite3.Database(DB_FILE, (err) => {
                      id INTEGER PRIMARY KEY,
                      username VARCHAR(50) UNIQUE NOT NULL,
                      password VARCHAR(50) NOT NULL,
-                     email VARCHAR(300),
+                     email VARCHAR(300) UNIQUE,
                      firstName VARCHAR(50),
                      lastName VARCHAR(50),
-                     dateOfBirth DATETIME
+                     dateOfBirth DATETIME,
+                     role BIT
                      );`,
                     function (err) {
                         if (err) throw err;
@@ -61,6 +62,7 @@ const db = new Sqlite3.Database(DB_FILE, (err) => {
                     id INTEGER PRIMARY KEY,
                     text TEXT NOT NULL, authorUsername TEXT NOT NULL,
                     postId INTEGER NOT NULL,
+                    commentId INTEGER,
                     date_created DATETIME NOT NULL
                 );`,
                     function (err) {

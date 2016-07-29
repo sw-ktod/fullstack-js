@@ -14,7 +14,7 @@ export default class UserList extends React.Component {
             let link = '/users/' + user.username;
             return (
                 <Link key={user.id} to={link}>
-                    <User username={user.username} key={user.id} userId={user.id}/>
+                    <User user={user} key={user.id}/>
                 </Link>
             );
         });
@@ -31,6 +31,9 @@ UserList.propTypes = {
         React.PropTypes.shape({
             id: React.PropTypes.number,
             username: React.PropTypes.string,
+            firstName: React.PropTypes.string,
+            lastName: React.PropTypes.string,
+            email: React.PropTypes.string,
         })
     ),
 };

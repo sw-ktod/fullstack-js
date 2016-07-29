@@ -34,7 +34,7 @@ export default class Comment extends React.Component {
             (<a className="cursor-pointer pull-right" onClick={this.handleDelete}>x</a>) : '';
 
         return (
-            <div className="comment well bs-component col-md-12">
+            <div className="comment well-sm bs-component col-md-12">
                 <h4 className="commentAuthor col-md-4">
                     <Link to={authorLink}> {this.props.author} </Link>
                     {deleteButton}

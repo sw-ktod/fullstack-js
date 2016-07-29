@@ -1,7 +1,7 @@
 import React from "react";
 
-import CommentForm from "../comment/comment-form";
-import CommentList from "../comment/comment-list";
+import CommentForm from "./comment-form";
+import CommentList from "./comment-list";
 
 export default class CommentComponent extends React.Component{
     constructor(props, context){
@@ -11,18 +11,22 @@ export default class CommentComponent extends React.Component{
         };
         this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
         this.handleCommentDelete = this.handleCommentDelete.bind(this);
+        this.populate = this.populate.bind(this);
 
     }
     render(){
         return (
-            <div>
-                <CommentList postAuthor={this.props.postAuthor} data={this.state.comments}
+            <div style={{border: 'solid 1px black'}}>
+                <CommentList postId={this.props.postId} postAuthor={this.props.postAuthor} data={this.state.comments} parentCommentId={this.props.parentCommentId}
                              onCommentDelete={this.handleCommentDelete}/>
                 <CommentForm onCommentSubmit={this.handleCommentSubmit} postId={this.props.postId}/>
             </div>
         )
     }
     handleCommentSubmit(comment) {
+        if(this.props.parentCommentId){
+            comment.commentId = this.props.parentCommentId;
+        }
         this.context.commentServices.submitComment(comment)
             .then((result) => {
                 let commentsArray = this.state.comments;
@@ -44,16 +48,24 @@ export default class CommentComponent extends React.Component{
                 this.context.errorHandler.alertError(err);
             });
     }
-    componentWillReceiveProps(nextProps){
-        if(nextProps.postComments){
-            this.setState({comments: nextProps.postComments})
+
+    populate(props){
+        if(props.comments){
+            this.setState({comments: props.comments})
         }
+    }
+
+    componentWillReceiveProps(nextProps){
+        this.populate(nextProps);
+    }
+    componentDidMount(){
+        this.populate(this.props);
     }
 }
 CommentComponent.propTypes = {
     postId: React.PropTypes.number.isRequired,
     postAuthor: React.PropTypes.string.isRequired,
-    postComments: React.PropTypes.arrayOf(
+    comments: React.PropTypes.arrayOf(
         React.PropTypes.shape({
             id: React.PropTypes.number.isRequired,
             authorUsername: React.PropTypes.string.isRequired,
@@ -61,7 +73,7 @@ CommentComponent.propTypes = {
             date_created: React.PropTypes.string.isRequired
         })
     ),
-    //commentId: React.PropTypes.number
+    parentCommentId: React.PropTypes.number
 };
 CommentComponent.contextTypes = {
     authServices: React.PropTypes.object,

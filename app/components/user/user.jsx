@@ -32,7 +32,7 @@ export default class User extends React.Component {
         return (
             <div className="user col-md-12">
                 <h2 className="username">
-                    {this.props.username}
+                    {this.props.user.firstName} {this.props.user.lastName} ({this.props.user.username})
                 </h2>
                 <span dangerouslySetInnerHTML={this.rawMarkup()}/>
             </div>
@@ -41,8 +41,13 @@ export default class User extends React.Component {
 }
 
 User.propTypes = {
-    userId: React.PropTypes.number,
-    username: React.PropTypes.string,
+    user: React.PropTypes.shape({
+        id: React.PropTypes.number.isRequired,
+        username: React.PropTypes.string.isRequired,
+        firstName: React.PropTypes.string,
+        lastName: React.PropTypes.string,
+        email: React.PropTypes.string,
+    }),
     children: React.PropTypes.any,
     //handleCommentDelete: React.PropTypes.func
 };
