@@ -17,7 +17,7 @@ exports.findAll = function (request, reply) {
     });
 };
 
-exports.findByPostId = function (request, reply) {
+exports.find = function (request, reply) {
     this.db.get('SELECT id, text, authorUsername, postId, date_created FROM comments WHERE postId = ?', [request.params.postId],
         (err, result) => {
             if (err) throw err;
@@ -55,12 +55,12 @@ exports.edit = function (request, reply) {
                             if (typeof postResult !== 'undefined') {
                                 if (request.auth.credentials.username !== postResult.authorUsername) {
                                     return reply(Boom.unauthorized());
-                                }else{
+                                } else {
                                     let comment = request.payload;
                                     this.db.run('UPDATE comments SET text = ? WHERE id = ?',
                                         [comment.text, comment.id],
-                                        (err)=>{
-                                            if(err) throw err;
+                                        (err)=> {
+                                            if (err) throw err;
 
                                             console.log('Updated: ', uri);
                                             return reply(comment).updated(uri);
@@ -69,7 +69,7 @@ exports.edit = function (request, reply) {
                             }
                         }
                     )
-                }else{
+                } else {
                     console.log(request.params.commentId);
                     this.db.run('DELETE FROM comments WHERE id = ?', [request.params.commentId],
                         (err) => {
@@ -82,9 +82,6 @@ exports.edit = function (request, reply) {
 
             }
         });
-
-
-
 };
 
 exports.remove = function (request, reply) {
@@ -99,7 +96,7 @@ exports.remove = function (request, reply) {
                             if (typeof postResult !== 'undefined') {
                                 if (request.auth.credentials.username !== postResult.authorUsername) {
                                     return reply(Boom.unauthorized());
-                                }else{
+                                } else {
                                     console.log(request.params.commentId);
                                     this.db.run('DELETE FROM comments WHERE id = ?', [request.params.commentId],
                                         (err) => {
@@ -112,7 +109,7 @@ exports.remove = function (request, reply) {
                             }
                         }
                     )
-                }else{
+                } else {
                     console.log(request.params.commentId);
                     this.db.run('DELETE FROM comments WHERE id = ?', [request.params.commentId],
                         (err) => {

@@ -6,10 +6,11 @@ import CommentForm from "../comment/comment-form";
 import CommentList from "../comment/comment-list";
 //import CommentServices from "../comment/comment-services";
 
-export default class PostList extends React.Component{
-    constructor(props){
+export default class PostList extends React.Component {
+    constructor(props) {
         super(props);
     }
+
     render() {
         let postComments = [];
 
@@ -60,6 +61,5 @@ PostList.propTypes = {
     handleCommentSubmit: React.PropTypes.func,
     handleCommentDelete: React.PropTypes.func,
     handlePostDelete: React.PropTypes.func
-    //onCommentDelete: React.PropTypes.func,
 };
 

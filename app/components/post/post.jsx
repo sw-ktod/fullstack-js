@@ -5,7 +5,7 @@ import Remarkable from "remarkable";
 import { Link } from "react-router";
 
 export default class Post extends React.Component {
-    constructor(props, context){
+    constructor(props, context) {
         super(props, context);
         this.props = props;
         this.handleDelete = this.handleDelete.bind(this);
@@ -18,9 +18,10 @@ export default class Post extends React.Component {
             __html: rawMarkup
         }
     }
-    handleDelete(){
+
+    handleDelete() {
         let postId = this.props.postId;
-        if(!postId){
+        if (!postId) {
             return;
         }
         this.props.onPostDelete(postId);
@@ -31,7 +32,7 @@ export default class Post extends React.Component {
 
         let authorLink = "/users/" + this.props.author;
         let link;
-        if(this.props.receiver){
+        if (this.props.receiver) {
             let receiverLink = "/users/" + this.props.receiver;
             link = <Link to={receiverLink}>{this.props.receiver} </Link>
         }
@@ -39,15 +40,15 @@ export default class Post extends React.Component {
             (<a className="cursor-pointer pull-right" onClick={this.handleDelete}>x</a>) : '';
         return (
             <div>
-                    <h3 className="postAuthor">
-                        <Link to={authorLink}> {this.props.author}</Link>
-                        {deleteButton}
-                        {link ? '->' : ''}
-                        {link ? link : ''}:
-                    </h3>
+                <h3 className="postAuthor">
+                    <Link to={authorLink}> {this.props.author}</Link>
+                    {deleteButton}
+                    {link ? '->' : ''}
+                    {link ? link : ''}:
+                </h3>
                 <span dangerouslySetInnerHTML={this.rawMarkup()}/>
                 <h5>{this.props.created}</h5>
-        </div>
+            </div>
         );
     }
 }

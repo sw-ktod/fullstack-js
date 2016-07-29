@@ -2,8 +2,8 @@
 
 import React from "react";
 
-export default class UserLoginForm extends React.Component{
-    constructor(props){
+export default class UserLoginForm extends React.Component {
+    constructor(props) {
         super(props);
         this.state = {
             username: '',
@@ -13,9 +13,11 @@ export default class UserLoginForm extends React.Component{
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
+
     handleUsernameChange(e) {
         this.setState({username: e.target.value});
     }
+
     handlePasswordChange(e) {
         this.setState({password: e.target.value});
     }
@@ -25,8 +27,8 @@ export default class UserLoginForm extends React.Component{
         let username = this.state.username.trim();
         let password = this.state.password.trim();
 
-        if(!username || !password){
-            return ;
+        if (!username || !password) {
+            return;
         }
 
         this.props.onUserLogin({username: username, password: password});
@@ -40,18 +42,19 @@ export default class UserLoginForm extends React.Component{
         return (
             <form className="col-md-6 text-center">
                 <h2>Login</h2>
+
                 <div className="form-group">
                     <label className="control-label" htmlFor="username">Username </label>
                     <input className="input-sm form-control" type="text" value={this.state.username} id="username"
-                        onChange={this.handleUsernameChange} />
+                           onChange={this.handleUsernameChange}/>
                 </div>
                 <div className="form-group">
                     <label className="control-label" htmlFor="password">Password </label>
                     <input className="input-sm form-control" type="password" value={this.state.password} id="password"
-                        onChange={this.handlePasswordChange} />
+                           onChange={this.handlePasswordChange}/>
                 </div>
-                    <input className="input-sm form-control" type="submit" value="Login" id="submit"
-                        onClick={this.handleSubmit} />
+                <input className="input-sm form-control" type="submit" value="Login" id="submit"
+                       onClick={this.handleSubmit}/>
             </form>
         );
     }

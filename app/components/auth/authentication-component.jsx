@@ -3,16 +3,16 @@
 import React from "react";
 import RegisterForm from "./register-form";
 import LoginForm from "./login-form";
-import errorHandler from "../error-handler"
 
-export default class AuthenticationComponent extends React.Component{
+export default class AuthenticationComponent extends React.Component {
 
-     constructor(prop, context){
+    constructor(prop, context) {
         super(prop, context);
-         this.onUserLogin = this.onUserLogin.bind(this);
-         this.onUserRegister = this.onUserRegister.bind(this);
+        this.onUserLogin = this.onUserLogin.bind(this);
+        this.onUserRegister = this.onUserRegister.bind(this);
 
-     }
+    }
+
     render() {
         return (
             <div>
@@ -21,30 +21,38 @@ export default class AuthenticationComponent extends React.Component{
             </div>
         )
     }
-    onUserLogin(user){
+
+    onUserLogin(user) {
         this.context.authServices.userLogin(user)
-            .then((result)=>{
+            .then((result)=> {
                 this.context.authServices.storeData('user', {account: result});
-                this.context.router.push({pathname: '/'});
-        }, (err)=>{
-                errorHandler(err.status, err.statusText, this.context.authServices, this.context.router);
+                if (!result.email) {
+                    this.context.router.push({pathname: '/users/' + result.username + '/edit'});
+                } else {
+                    this.context.router.push({pathname: '/'});
+                }
+            }, (err)=> {
+                this.context.errorHandler.alertError(err);
             });
     }
-    onUserRegister(user){
+
+    onUserRegister(user) {
         this.context.authServices.userRegister(user)
-            .then((result)=>{
+            .then((result)=> {
                 console.log(result);
-            }, (err)=>{
-                errorHandler(err.status, err.statusText, this.context.authServices, this.context.router);
+            }, (err)=> {
+                this.context.errorHandler.alertError(err);
             });
     }
-    componentDidMount(){
-        if(this.context.authServices.isAuthenticated()){
-           this.context.router.push({pathname: '/'});
+
+    componentDidMount() {
+        if (this.context.authServices.isAuthenticated()) {
+            this.context.router.push({pathname: '/'});
         }
     }
 }
 AuthenticationComponent.contextTypes = {
     authServices: React.PropTypes.object,
+    errorHandler: React.PropTypes.object,
     router: React.PropTypes.object,
 };

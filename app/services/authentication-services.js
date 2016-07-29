@@ -1,21 +1,26 @@
 import $ from "jquery";
 
-export default class AuthenticationServices{
-    constructor(baseUrl){
+export default class AuthenticationServices {
+    constructor(baseUrl) {
         this.url = baseUrl;
     }
-    storeData(key, value){
+
+    storeData(key, value) {
         localStorage.setItem(key, JSON.stringify(value));
     }
-    removeStoredData(key){
+
+    removeStoredData(key) {
         localStorage.removeItem(key);
     }
-    getStoredData(key){
+
+    getStoredData(key) {
         return JSON.parse(localStorage[key]);
     }
+
     isAuthenticated() {
         return (localStorage.hasOwnProperty('user'));
     }
+
     validateAuthentication() {
         let url = 'api/auth';
         return new Promise((resolve, reject) => {
@@ -26,16 +31,6 @@ export default class AuthenticationServices{
             }).done(resolve)
                 .fail(reject);
         });
-        //.done((user)=> {
-        //    if(!user){
-        //        localStorage.removeItem('user');
-        //        browserHistory.push('/auth');
-        //    }else{
-        //        localStorage.setItem('user', JSON.stringify(user));
-        //    }
-        //}).fail((xhr, status, err)=> {
-        //    errorHandler(url, xhr, err.toString());
-        //});
     }
 
     handleUserLogout() {
@@ -49,7 +44,8 @@ export default class AuthenticationServices{
                 .fail(reject);
         });
     }
-    userRegister (user){
+
+    userRegister(user) {
         let url = this.url + "/register";
         return new Promise((resolve, reject) => {
             $.ajax({
@@ -62,7 +58,8 @@ export default class AuthenticationServices{
                 .fail(reject);
         });
     }
-    userLogin (user){
+
+    userLogin(user) {
         let url = this.url + "/login";
         return new Promise((resolve, reject) => {
             $.ajax({

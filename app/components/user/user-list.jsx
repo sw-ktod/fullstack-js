@@ -4,15 +4,16 @@ import React from "react";
 import User from "./user";
 import { Link } from "react-router";
 
-export default class UserList extends React.Component{
-    constructor(props){
+export default class UserList extends React.Component {
+    constructor(props) {
         super(props);
     }
+
     render() {
-        let userNodes = this.props.data.map((user)=>{
+        let userNodes = this.props.data.map((user)=> {
             let link = '/users/' + user.username;
             return (
-                <Link key={user.id} to={link} >
+                <Link key={user.id} to={link}>
                     <User username={user.username} key={user.id} userId={user.id}/>
                 </Link>
             );

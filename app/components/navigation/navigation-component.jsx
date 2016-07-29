@@ -4,14 +4,15 @@ import React from "react";
 import { Link } from "react-router";
 import $ from "jquery";
 
-export default class NavigationComponent extends React.Component{
-    constructor(props, context){
+export default class NavigationComponent extends React.Component {
+    constructor(props, context) {
         super(props, context);
         this.toggleDropdown = this.toggleDropdown.bind(this);
         this.onUserLogout = this.onUserLogout.bind(this);
     }
+
     render() {
-        if(!this.context.authServices.isAuthenticated()){
+        if (!this.context.authServices.isAuthenticated()) {
             return (
                 <nav className="navbar navbar-default">
                     <div className="container-fluid">
@@ -26,7 +27,8 @@ export default class NavigationComponent extends React.Component{
         }
         let user = this.context.authServices.getStoredData('user');
         let linkToUser = "/users/" + user.account.username;
-        let linkToUserEdit = linkToUser + "/edit";
+        let linkToUserEdit = "/users/" + user.account.username + "/edit";
+        let linkToPasswordEditForm = linkToUser + "/password";
         return (
             <nav className="navbar navbar-default">
                 <div className="container-fluid">
@@ -43,18 +45,31 @@ export default class NavigationComponent extends React.Component{
                             <Link to={linkToUser}> {user.account.username} </Link>
                         </li>
                         <li className="dropdown" onClick={this.toggleDropdown}>
-                            <a className="dropdown-toggle cursor-pointer" data-toggle="dropdown" id="userNav"> <span className="caret"></span> </a>
+                            <a className="dropdown-toggle cursor-pointer" data-toggle="dropdown" id="userNav"> <span
+                                className="caret"></span> </a>
                             <ul className="dropdown-menu" aria-labelledb="userNav">
+                                <li className="divider"/>
                                 <li>
                                     <Link to={linkToUser}> {user.account.username} </Link>
                                 </li>
+                                <li className="divider"/>
+                                <li className="divider"/>
+                                <li className="divider"/>
                                 <li>
-                                    <Link to={linkToUserEdit}> Profile </Link>
+                                    <Link to={linkToUserEdit}> Edit profile </Link>
                                 </li>
                                 <li className="divider"/>
                                 <li>
-                                    <a className="cursor-pointer" onClick={this.onUserLogout} >Logout</a>
+                                    <Link to={linkToPasswordEditForm}> Change Password </Link>
                                 </li>
+                                <li className="divider"/>
+                                <li className="divider"/>
+                                <li className="divider"/>
+                                <li>
+                                    <a className="cursor-pointer" onClick={this.onUserLogout}>Logout</a>
+                                </li>
+                                <li className="divider"/>
+                                <li className="divider"/>
                             </ul>
                         </li>
                     </ul>
@@ -62,20 +77,22 @@ export default class NavigationComponent extends React.Component{
             </nav>
         );
     }
-    onUserLogout(){
+
+    onUserLogout() {
         this.context.authServices.handleUserLogout()
-            .then(()=>{
+            .then(()=> {
                 this.context.authServices.removeStoredData('user');
                 this.context.router.push({pathname: '/auth'});
             }
         );
     }
-    toggleDropdown(){
-        $('.dropdown').click(function(){
+
+    toggleDropdown() {
+        $('.dropdown').click(function () {
             $('.dropdown').addClass('open')
         });
 
-        $(document).click(function(e) {
+        $(document).click(function (e) {
             var target = e.target;
             if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
                 $('.dropdown').removeClass('open');

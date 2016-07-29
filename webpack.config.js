@@ -42,7 +42,7 @@ module.exports = {
         host: process.env.HOST || 'localhost',
         port: process.env.PORT || 4000,
         proxy: {
-            '/api/*':{
+            '/api/*': {
                 target: 'http://localhost:9000/',
                 secure: false
             }

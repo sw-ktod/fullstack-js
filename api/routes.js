@@ -7,9 +7,9 @@ const Posts = require('./handlers/posts.handler');
 const Comments = require('./handlers/comments.handler');
 
 module.exports = [
-    /**
-     * AUTH_ROUTES
-     */
+/**
+ * AUTH_ROUTES
+ */
     {
         method: 'GET',
         path: '/api/auth',
@@ -31,6 +31,7 @@ module.exports = [
                     //id: Joi.number().integer().min(1).optional(),
                     username: Joi.string().min(5).required(),
                     password: Joi.string().min(5).required(),
+                    confirmPassword: Joi.string().min(5).required(),
                 })
             },
             auth: {
@@ -58,26 +59,43 @@ module.exports = [
         }
     },
     {
+        method: 'PUT',
+        path: '/api/auth/password',
+        config: {
+            validate: {
+                payload: Joi.object({
+                    newPassword: Joi.string().min(5).required(),
+                    confirmPassword: Joi.string().min(5).required(),
+                    password: Joi.string().min(5).required()
+                })
+            },
+            auth: {
+                strategy: 'session'
+            }
+        },
+        handler: Auth.changePassword
+    },
+    {
         method: 'GET',
         path: '/api/auth/logout',
-        config:{
+        config: {
             auth: {
                 strategy: 'session'
             },
         },
         handler: Auth.logout
     },
-    /**
-     * End of AUTH_ROUTES
-     */
+/**
+ * End of AUTH_ROUTES
+ */
 
-    /**
-     * USER_ROUTES
-     */
+/**
+ * USER_ROUTES
+ */
     {
         method: 'GET',
         path: '/api/users',
-        config:{
+        config: {
             auth: {
                 strategy: 'session'
             },
@@ -86,8 +104,8 @@ module.exports = [
     },
     {
         method: 'GET',
-        path: '/api/users/me',
-        config:{
+        path: '/api/me',
+        config: {
             auth: {
                 strategy: 'session'
             },
@@ -126,18 +144,18 @@ module.exports = [
     //    }
     //},
 
-    /**
-     * End of USER_ROUTES
-     */
+/**
+ * End of USER_ROUTES
+ */
 
-    /**
-     * POST_ROUTES
-     */
+/**
+ * POST_ROUTES
+ */
     {
         method: 'GET',
         path: '/api/posts',
-        config:{
-            auth:{
+        config: {
+            auth: {
                 strategy: 'session'
             }
         },
@@ -153,7 +171,7 @@ module.exports = [
                     postId: Joi.number().integer().min(1).required()
                 }
             },
-            auth:{
+            auth: {
                 strategy: 'session'
             }
         }
@@ -184,7 +202,7 @@ module.exports = [
                     receiverUsername: Joi.string().allow(''),
                 })
             },
-            auth:{
+            auth: {
                 strategy: 'session'
             }
         }
@@ -202,7 +220,7 @@ module.exports = [
                     text: Joi.string().min(3).required()
                 })
             },
-            auth:{
+            auth: {
                 strategy: 'session'
             }
         }
@@ -217,43 +235,43 @@ module.exports = [
                     postId: Joi.number().min(1).required()
                 }
             },
-            auth:{
+            auth: {
                 strategy: 'session'
             }
         }
     },
-    /**
-     * End of POST_ROUTES
-     */
+/**
+ * End of POST_ROUTES
+ */
 
-    /**
-     * COMMENT_ROUTES
-     */
+/**
+ * COMMENT_ROUTES
+ */
     {
         method: 'GET',
         path: '/api/comments',
         handler: Comments.findAll,
         config: {
-            auth:{
+            auth: {
                 strategy: 'session'
             }
         }
     },
-    {
-        method: 'GET',
-        path: '/api/posts/{postId}/comments',
-        handler: Comments.findByPostId,
-        config: {
-            validate: {
-                params: {
-                    postId: Joi.number().integer().min(1).required()
-                }
-            },
-            auth:{
-                strategy: 'session'
-            }
-        }
-    },
+    //{
+    //    method: 'GET',
+    //    path: '/api/posts/{postId}/comments',
+    //    handler: Comments.findByPostId,
+    //    config: {
+    //        validate: {
+    //            params: {
+    //                postId: Joi.number().integer().min(1).required()
+    //            }
+    //        },
+    //        auth: {
+    //            strategy: 'session'
+    //        }
+    //    }
+    //},
     {
         method: 'POST',
         path: '/api/comments',
@@ -265,7 +283,7 @@ module.exports = [
                     postId: Joi.number().min(1).required(),
                 })
             },
-            auth:{
+            auth: {
                 strategy: 'session'
             }
         }
@@ -280,14 +298,14 @@ module.exports = [
                     commentId: Joi.number().min(1).required()
                 }
             },
-            auth:{
+            auth: {
                 strategy: 'session'
             }
         }
     },
-    /**
-     * End of COMMENT_ROUTES
-     */
+/**
+ * End of COMMENT_ROUTES
+ */
 
     //{
     //    method: 'DELETE',

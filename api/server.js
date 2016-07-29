@@ -19,7 +19,15 @@ const db = new Sqlite3.Database(DB_FILE, (err) => {
             console.log(result);
             if (err) throw err;
             if (!result) {
-                db.run(`CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL, password TEXT NOT NULL);`,
+                db.run(`CREATE TABLE users (
+                     id INTEGER PRIMARY KEY,
+                     username VARCHAR(50) UNIQUE NOT NULL,
+                     password VARCHAR(50) NOT NULL,
+                     email VARCHAR(300),
+                     firstName VARCHAR(50),
+                     lastName VARCHAR(50),
+                     dateOfBirth DATETIME
+                     );`,
                     function (err) {
                         if (err) throw err;
                         console.log(`Table "users" successfully created in db: ${DB_FILE}`);
@@ -31,7 +39,13 @@ const db = new Sqlite3.Database(DB_FILE, (err) => {
             console.log(result);
             if (err) throw err;
             if (!result) {
-                db.run(`CREATE TABLE posts (id INTEGER PRIMARY KEY, text TEXT NOT NULL, authorUsername TEXT NOT NULL, receiverUsername TEXT, date_created DATETIME NOT NULL);`,
+                db.run(`CREATE TABLE posts (
+                    id INTEGER PRIMARY KEY,
+                    text TEXT NOT NULL,
+                    authorUsername VARCHAR(50) NOT NULL,
+                    receiverUsername VARCHAR(50),
+                    date_created DATETIME NOT NULL
+                );`,
                     function (err) {
                         if (err) throw err;
                         console.log(`Table "users" successfully created in db: ${DB_FILE}`);
@@ -43,7 +57,12 @@ const db = new Sqlite3.Database(DB_FILE, (err) => {
             console.log(result);
             if (err) throw err;
             if (!result) {
-                db.run(`CREATE TABLE comments (id INTEGER PRIMARY KEY, text TEXT NOT NULL, authorUsername TEXT NOT NULL, postId INTEGER NOT NULL, date_created DATETIME NOT NULL);`,
+                db.run(`CREATE TABLE comments (
+                    id INTEGER PRIMARY KEY,
+                    text TEXT NOT NULL, authorUsername TEXT NOT NULL,
+                    postId INTEGER NOT NULL,
+                    date_created DATETIME NOT NULL
+                );`,
                     function (err) {
                         if (err) throw err;
                         console.log(`Table "comments" successfully created in db: ${DB_FILE}`);
@@ -78,42 +97,43 @@ server.register([{
 }, {
     register: HapiAuthCookie
 }], (err) => {
+    if (err) {
+        throw err;
+    }
+
+    const cache = server.cache({segment: 'sessions', expiresIn: 3 * 24 * 60 * 60 * 1000});
+    server.app.cache = cache;
+
+    server.auth.strategy('session', 'cookie', true, {
+        password: 'password-should-be-32-characters',
+        cookie: '__sess',
+        redirectTo: false,
+        isSecure: false,
+        validateFunc: (request, session, callback) => {
+            cache.get(session.__sess, (err, cached) => {
+
+                if (err) {
+                    return callback(err, false);
+                }
+
+                if (!cached) {
+                    return callback(null, false);
+                }
+                return callback(null, true, cached.account);
+            });
+        }
+    });
+
+    // Registering roots
+    server.route(routes);
+
+    // Starting the server
+    server.start((err) => {
         if (err) {
             throw err;
         }
-
-        const cache = server.cache({ segment: 'sessions', expiresIn: 3 * 24 * 60 * 60 * 1000 });
-        server.app.cache = cache;
-
-        server.auth.strategy('session', 'cookie', true, {
-            password: 'password-should-be-32-characters',
-            cookie: '__sess',
-            redirectTo: false,
-            isSecure: false,
-            validateFunc: (request, session, callback) => {
-                cache.get(session.__sess, (err, cached) => {
-
-                    if (err) {
-                        return callback(err, false);
-                    }
-
-                    if (!cached) {
-                        return callback(null, false);
-                    }
-                    return callback(null, true, cached.account);
-                });
-            }
-        });
-
-
-        // Starting the server
-        server.start((err) => {
-            if (err) {
-                throw err;
-            }
-            console.log('Server running at:', server.info.uri);
-        });
+        console.log('Server running at:', server.info.uri);
+    });
 });
 
-// Registering roots
-server.route(routes);
+

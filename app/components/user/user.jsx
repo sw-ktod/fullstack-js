@@ -4,14 +4,14 @@ import React from "react";
 import Remarkable from "remarkable";
 
 export default class User extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.props = props;
         //this.handleDelete = this.handleDelete.bind(this);
     }
 
     rawMarkup() {
-        if(this.props.children){
+        if (this.props.children) {
             let md = new Remarkable();
             let rawMarkup = md.render(this.props.children.toString());
             return {
@@ -30,7 +30,7 @@ export default class User extends React.Component {
 
     render() {
         return (
-            <div className="user">
+            <div className="user col-md-12">
                 <h2 className="username">
                     {this.props.username}
                 </h2>

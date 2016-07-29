@@ -1,14 +1,15 @@
 'use strict';
 import $ from "jquery";
 
-export default class PostServices{
+export default class PostServices {
 
-    constructor(baseUrl){
+    constructor(baseUrl) {
         this.url = baseUrl;
     }
-    submitPost(post){
+
+    submitPost(post) {
         let url = this.url;
-        return new Promise((resolve, reject)=>{
+        return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'POST',
                 url: url,
@@ -19,9 +20,10 @@ export default class PostServices{
                 .fail(reject);
         });
     }
-    getUserRelatedPosts(username){
+
+    getUserRelatedPosts(username) {
         let url = "/api/users/" + username + "/posts";
-        return new Promise((resolve, reject)=>{
+        return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'GET',
                 url: url,
@@ -31,9 +33,10 @@ export default class PostServices{
                 .fail(reject);
         });
     }
-    getPosts(){
+
+    getPosts() {
         let url = this.url;
-        return new Promise((resolve, reject)=>{
+        return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'GET',
                 url: url,
@@ -43,6 +46,7 @@ export default class PostServices{
                 .fail(reject);
         });
     }
+
     editPost(post) {
         let url = this.url;
         return new Promise((resolve, reject)=> {
@@ -56,9 +60,10 @@ export default class PostServices{
                 .fail(reject);
         });
     }
+
     removePost(postId) {
         let url = this.url + '/' + postId;
-        return new Promise((resolve, reject)=>{
+        return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'DELETE',
                 url: url

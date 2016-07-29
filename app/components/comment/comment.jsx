@@ -5,7 +5,7 @@ import Remarkable from "remarkable";
 import { Link } from "react-router";
 
 export default class Comment extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.props = props;
         this.handleDelete = this.handleDelete.bind(this);
@@ -19,9 +19,9 @@ export default class Comment extends React.Component {
         }
     }
 
-    handleDelete(){
+    handleDelete() {
         let commentId = this.props.commentId;
-        if(!commentId){
+        if (!commentId) {
             return;
         }
         this.props.onCommentDelete(commentId);
@@ -31,7 +31,7 @@ export default class Comment extends React.Component {
         let currentUser = this.context.authServices.getStoredData('user').account;
         let authorLink = "/users/" + this.props.author;
         let deleteButton = (this.props.author === currentUser.username || this.props.postAuthor === currentUser.username) ?
-                (<a className="cursor-pointer pull-right" onClick={this.handleDelete}>x</a>) : '';
+            (<a className="cursor-pointer pull-right" onClick={this.handleDelete}>x</a>) : '';
 
         return (
             <div className="comment well bs-component col-md-12">

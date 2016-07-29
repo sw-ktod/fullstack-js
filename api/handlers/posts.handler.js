@@ -17,32 +17,29 @@ exports.findAll = function (request, reply) {
     });
 };
 exports.findRelatedPostsByUsername = function (request, reply) {
-    this.db.all('SELECT id, text, authorUsername, receiverUsername, date_created FROM posts WHERE authorUsername = ? OR receiverUsername = ?',
-        [request.params.username, request.params.username],
-        (err, result)=>{
-            if(err) throw err;
-            if (typeof result !== 'undefined') {
-                reply(result);
-            }
-            else {
-                reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
-            }
+
+    this.db.all('SELECT postId FROM comments WHERE authorUsername = ?',
+        [request.params.username],
+        (err, commentedPostIds) => {
+            if (err) throw err;
+            this.db.all('SELECT id, text, authorUsername, receiverUsername, date_created ' +
+                'FROM posts ' +
+                'WHERE authorUsername = ? ' +
+                'OR receiverUsername = ? ' +
+                'OR id IN (SELECT postId FROM comments WHERE authorUsername = ?)',
+                [request.params.username, request.params.username, request.params.username],
+                (err, result)=> {
+                    if (err) throw err;
+                    if (typeof result !== 'undefined') {
+                        reply(result);
+                    }
+                    else {
+                        reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
+                    }
+                }
+            )
         }
-    )
-};
-exports.findRelatedPostsByUserId = function (request, reply) {
-    this.db.all('SELECT id, text, authorUsername, receiverUsername, date_created FROM posts WHERE authorId = ? OR receiverId = ?',
-        [request.params.id, request.params.id],
-        (err, result)=>{
-            if(err) throw err;
-            if (typeof result !== 'undefined') {
-                reply(result);
-            }
-            else {
-                reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
-            }
-        }
-    )
+    );
 };
 
 exports.find = function (request, reply) {

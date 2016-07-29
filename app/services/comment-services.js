@@ -1,13 +1,14 @@
 import $ from "jquery";
 
-export default class CommentServices{
+export default class CommentServices {
 
-    constructor(baseUrl){
+    constructor(baseUrl) {
         this.url = baseUrl;
     }
-    submitComment(comment){
-        let url =  'api/comments';
-        return new Promise((resolve, reject)=>{
+
+    submitComment(comment) {
+        let url = 'api/comments';
+        return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'POST',
                 url: url,
@@ -18,9 +19,10 @@ export default class CommentServices{
                 .fail(reject);
         });
     }
-    getComments(){
+
+    getComments() {
         let url = '/api/comments';
-        return new Promise((resolve, reject)=>{
+        return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'GET',
                 url: url,
@@ -30,9 +32,10 @@ export default class CommentServices{
                 .fail(reject);
         });
     }
-    deleteComment(commentId){
+
+    deleteComment(commentId) {
         let url = '/api/comments/' + commentId;
-        return new Promise((resolve, reject)=>{
+        return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'DELETE',
                 url: url
