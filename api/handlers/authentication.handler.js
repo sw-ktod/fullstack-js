@@ -2,7 +2,7 @@
 
 const Boom = require('boom');
 const md5 = require('md5');
-const initialRole = 1;
+const initialRole = 0;
 let uuid = 1;
 
 exports.login = function (request, reply) {
