@@ -11,10 +11,12 @@ export default class User extends React.Component {
 
     render() {
         return (
-            <div className="user col-md-12">
-                <h2 className="username">
-                    {this.props.user.firstName} {this.props.user.lastName} ({this.props.user.username})
+            <div className="user col-md-4">
+                <h2 className="name">
+                    {this.props.user.firstName} {this.props.user.lastName}
                 </h2>
+                ({this.props.user.username})
+
             </div>
         );
     }
@@ -27,6 +29,7 @@ User.propTypes = {
         firstName: React.PropTypes.string,
         lastName: React.PropTypes.string,
         email: React.PropTypes.string,
+        dateOfBirth: React.PropTypes.string,
     }),
     children: React.PropTypes.any,
 };

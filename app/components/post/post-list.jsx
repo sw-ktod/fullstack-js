@@ -53,6 +53,8 @@ PostList.propTypes = {
             date_created: React.PropTypes.string.isRequired
         })
     ),
+    handleCommentSubmit: React.PropTypes.func,
+    handleCommentDelete: React.PropTypes.func,
     handlePostDelete: React.PropTypes.func,
     handlePostUpdate: React.PropTypes.func
 };

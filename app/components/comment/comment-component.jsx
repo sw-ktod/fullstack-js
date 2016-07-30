@@ -59,7 +59,7 @@ export default class CommentComponent extends React.Component{
         "use strict";
         this.context.commentServices.updateComment(comment)
             .then((result)=>{
-                let commentArray = this.state.posts;
+                let commentArray = this.state.comments;
                 commentArray.forEach((comment)=>{
                     if(comment.id === result.id){
                         commentArray[commentArray.indexOf(comment)].text = result.text;

@@ -40,6 +40,12 @@ export default class NavigationComponent extends React.Component {
                             <Link to="/users">Users</Link>
                         </li>
                     </ul>
+                    <form className="navbar-form navbar-left" role="search">
+                        <div className="form-group">
+                            <input type="text" className="form-control" placeholder="Search"/>
+                        </div>
+                            <button type="submit" className="btn btn-default">Submit</button>
+                    </form>
                     <ul className="navbar-right nav navbar-nav">
                         <li>
                             <Link to={linkToUser}> {user.account.username} </Link>

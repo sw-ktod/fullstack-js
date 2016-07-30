@@ -11,6 +11,7 @@ export default class Comment extends React.Component {
         this.onCommentDelete = this.onCommentDelete.bind(this);
         this.handleTextChange = this.handleTextChange.bind(this);
         this.triggerEditMode = this.triggerEditMode.bind(this);
+        this.cancelEdit = this.cancelEdit.bind(this);
         this.onCommentUpdate = this.onCommentUpdate.bind(this);
         this.state = {
             editMode: undefined,
@@ -35,6 +36,12 @@ export default class Comment extends React.Component {
     triggerEditMode(){
         this.setState({editMode: !this.state.editMode})
     }
+    cancelEdit(){
+        if(this.state.text !== this.props.children){
+            this.setState({text: this.props.children});
+        }
+        this.triggerEditMode();
+    }
 
     render() {
         let currentUser = this.context.authServices.getStoredData('user').account;
@@ -43,19 +50,16 @@ export default class Comment extends React.Component {
             (<a className="cursor-pointer pull-right" onClick={this.onCommentDelete}>x</a>) : '';
         let editButton = (this.props.author === currentUser.username || currentUser.role > 0) ?
             (<a className="cursor-pointer pull-right" onClick={this.triggerEditMode}>Edit</a>) : '';
-        let cancelButton = (<a className="cursor-pointer pull-right" onClick={this.triggerEditMode} >Cancel</a>);
-        let submitButton = (<a className="cursor-pointer pull-right" onClick={this.onCommentUpdate} >Submit</a>);
 
         if(this.state.editMode){
             return (
                 <div className="comment well-sm bs-component col-md-12">
                     <h4 className="commentAuthor col-md-4">
                         <Link to={authorLink}> {this.props.author} </Link>
-                        {cancelButton}
-                        {submitButton}
                     </h4>
-
                     <input type="text" onChange={this.handleTextChange} value={this.state.text} />
+                    <input type="submit" onClick={this.onCommentUpdate} value="Update" />
+                    <input type="submit" onClick={this.cancelEdit} value="Cancel" />
                     <h6 className="col-md-12">{this.props.created}</h6>
                 </div>
 
@@ -66,10 +70,9 @@ export default class Comment extends React.Component {
             <div className="comment well-sm bs-component col-md-12">
                 <h4 className="commentAuthor col-md-4">
                     <Link to={authorLink}> {this.props.author} </Link>
-                    {editButton}
-                    {deleteButton}
                 </h4>
-
+                {editButton}
+                {deleteButton}
                 <span className="col-md-12" dangerouslySetInnerHTML={getMarkDown(this.state.text)}/>
                 <h6 className="col-md-12">{this.props.created}</h6>
             </div>

@@ -59,11 +59,11 @@ export default class Post extends React.Component {
                 <div>
                     <h3 className="postAuthor">
                         <Link to={authorLink}> {this.props.post.authorUsername}</Link>
-                        {cancelButton}
-                        {submitButton}
                         {link ? '->' : ''}
                         {link ? link : ''}:
                     </h3>
+                    {cancelButton}
+                    {submitButton}
                     <input onChange={this.handleTextChange} type="text" value={this.state.text}/>
                     <h5>{this.props.post.date_created}</h5>
                 </div>
@@ -74,11 +74,11 @@ export default class Post extends React.Component {
             <div>
                 <h3 className="postAuthor">
                     <Link to={authorLink}> {this.props.post.authorUsername}</Link>
-                    {editButton}
-                    {deleteButton}
                     {link ? '->' : ''}
                     {link ? link : ''}:
                 </h3>
+                {editButton}
+                {deleteButton}
                 <span dangerouslySetInnerHTML={getMarkDown(this.state.text)}/>
                 <h5>{this.props.post.date_created}</h5>
             </div>

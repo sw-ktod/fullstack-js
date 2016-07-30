@@ -15,6 +15,7 @@ export default class PostComponent extends React.Component {
         this.handlePostUpdate = this.handlePostUpdate.bind(this);
         this.handlePostDelete = this.handlePostDelete.bind(this);
         this.getUserRelatedPosts = this.getUserRelatedPosts.bind(this);
+        this.populate = this.populate.bind(this);
     }
 
     render() {
@@ -69,7 +70,7 @@ export default class PostComponent extends React.Component {
                 let postArray = this.state.posts;
                 postArray.forEach((post)=>{
                     if(post.id === result.id){
-                        postArray[postArray.indexOf(post)] = result;
+                        postArray[postArray.indexOf(post)].text = result.text;
                         return;
                     }
                 });
@@ -93,8 +94,7 @@ export default class PostComponent extends React.Component {
                 this.context.errorHandler.alertError(err);
             })
     }
-
-    componentDidMount() {
+    populate(){
         if (this.context.authServices.isAuthenticated()) {
             if(this.props.username){
                 this.getUserRelatedPosts(this.props.username);
@@ -117,6 +117,12 @@ export default class PostComponent extends React.Component {
         } else {
             this.context.router.push({pathname: '/auth'});
         }
+    }
+    componentDidMount() {
+        this.populate();
+    }
+    componentWillReceiveProps(){
+        this.populate();
     }
 }
 PostComponent.propTypes = {
