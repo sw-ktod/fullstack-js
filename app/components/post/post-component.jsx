@@ -12,6 +12,7 @@ export default class PostComponent extends React.Component {
             comments: []
         };
         this.handlePostSubmit = this.handlePostSubmit.bind(this);
+        this.handlePostUpdate = this.handlePostUpdate.bind(this);
         this.handlePostDelete = this.handlePostDelete.bind(this);
         this.getUserRelatedPosts = this.getUserRelatedPosts.bind(this);
     }
@@ -21,7 +22,9 @@ export default class PostComponent extends React.Component {
             <div>
                 <PostForm onPostSubmit={this.handlePostSubmit}/>
                 <br />
-                <PostList posts={this.state.posts} comments={this.state.comments}
+                <PostList posts={this.state.posts}
+                          comments={this.state.comments}
+                          handlePostUpdate={this.handlePostUpdate}
                           handlePostDelete={this.handlePostDelete}/>
             </div>)
     }
@@ -60,6 +63,21 @@ export default class PostComponent extends React.Component {
                 this.context.errorHandler.alertError(err);
             });
     }
+    handlePostUpdate(post){
+        this.context.postServices.editPost(post)
+            .then((result)=>{
+                let postArray = this.state.posts;
+                postArray.forEach((post)=>{
+                    if(post.id === result.id){
+                        postArray[postArray.indexOf(post)] = result;
+                        return;
+                    }
+                });
+                this.setState({posts: postArray});
+            },(err)=>{
+                this.context.errorHandler.alertError(err);
+            })
+    }
 
     handlePostDelete(postId) {
         this.context.postServices.removePost(postId)
@@ -67,7 +85,10 @@ export default class PostComponent extends React.Component {
                 let postArray = this.state.posts.filter((post)=> {
                     return post.id !== postId;
                 });
-                this.setState({posts: postArray});
+                let commentArray = this.state.comments.filter((comment)=>{
+                    return comment.postId !== postId;
+                });
+                this.setState({posts: postArray, comments: commentArray});
             }, (err)=> {
                 this.context.errorHandler.alertError(err);
             })

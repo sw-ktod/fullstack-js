@@ -1,22 +1,26 @@
 "use strict";
 
 import React from "react";
-import Remarkable from "remarkable";
 import { Link } from "react-router";
+import getMarkDown from "../../common/markdown";
 
 export default class Post extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.props = props;
+        this.triggerEditMode = this.triggerEditMode.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.onPostUpdate = this.onPostUpdate.bind(this);
+        this.handleTextChange = this.handleTextChange.bind(this);
+
+        this.state = {
+            editMode: undefined,
+            text: this.props.children
+        }
     }
 
-    rawMarkup() {
-        let md = new Remarkable();
-        let rawMarkup = md.render(this.props.children);
-        return {
-            __html: rawMarkup
-        }
+    handleTextChange(e){
+        this.setState({text: e.target.value});
     }
 
     handleDelete() {
@@ -24,6 +28,14 @@ export default class Post extends React.Component {
             return;
         }
         this.props.onPostDelete(this.props.post.id);
+    }
+
+    triggerEditMode(){
+        this.setState({editMode: !this.state.editMode})
+    }
+    onPostUpdate(){
+        this.props.onPostUpdate({id: this.props.post.id, text: this.state.text});
+        this.triggerEditMode();
     }
 
     render() {
@@ -35,17 +47,39 @@ export default class Post extends React.Component {
             let receiverLink = "/users/" + this.props.post.receiverUsername;
             link = <Link to={receiverLink}>{this.props.post.receiverUsername} </Link>
         }
-        let deleteButton = (this.props.post.authorUsername === currentUser.username || this.props.post.receiverUsername === currentUser.username) ?
+        let deleteButton = (this.props.post.authorUsername === currentUser.username || this.props.post.receiverUsername === currentUser.username || currentUser.role > 0) ?
             (<a className="cursor-pointer pull-right" onClick={this.handleDelete}>x</a>) : '';
+        let editButton = (this.props.post.authorUsername === currentUser.username || currentUser.role > 0) ?
+            (<a className="cursor-pointer pull-right" onClick={this.triggerEditMode}>Edit</a>) : '';
+        let cancelButton = (<a className="cursor-pointer pull-right" onClick={this.triggerEditMode} >Cancel</a>);
+        let submitButton = (<a className="cursor-pointer pull-right" onClick={this.onPostUpdate} >Submit</a>);
+
+        if(this.state.editMode){
+            return (
+                <div>
+                    <h3 className="postAuthor">
+                        <Link to={authorLink}> {this.props.post.authorUsername}</Link>
+                        {cancelButton}
+                        {submitButton}
+                        {link ? '->' : ''}
+                        {link ? link : ''}:
+                    </h3>
+                    <input onChange={this.handleTextChange} type="text" value={this.state.text}/>
+                    <h5>{this.props.post.date_created}</h5>
+                </div>
+            );
+        }
+
         return (
             <div>
                 <h3 className="postAuthor">
                     <Link to={authorLink}> {this.props.post.authorUsername}</Link>
+                    {editButton}
                     {deleteButton}
                     {link ? '->' : ''}
                     {link ? link : ''}:
                 </h3>
-                <span dangerouslySetInnerHTML={this.rawMarkup()}/>
+                <span dangerouslySetInnerHTML={getMarkDown(this.state.text)}/>
                 <h5>{this.props.post.date_created}</h5>
             </div>
         );
@@ -62,7 +96,8 @@ Post.propTypes = {
         date_created: React.PropTypes.string.isRequired
     }),
     children: React.PropTypes.node,
-    onPostDelete: React.PropTypes.func
+    onPostDelete: React.PropTypes.func,
+    onPostUpdate: React.PropTypes.func
 };
 Post.contextTypes = {
     authServices: React.PropTypes.object

@@ -70,11 +70,41 @@ exports.create = function (request, reply) {
 };
 exports.edit = function (request, reply) {
     let post = request.payload;
-    console.log(post);
-};
+    if (request.auth.credentials.role > 0) {
+        this.db.run('UPDATE posts SET text = ? WHERE id = ?',
+            [post.text, post.id],
+            function (err) {
+                if (err) throw err;
+                if (this.changes > 0) {
+                    console.log('Updated: ', request.raw.req.url + `/${post.id}`);
+                    return reply(post);
+                }
+                return reply(Boom.notFound(`Post with id: ${post.id} was not found`));
+            })
+    } else {
+        this.db.get('SELECT authorUsername FROM posts WHERE id = ?', [post.id],
+            (err, result) => {
+                if (err) throw err;
+                if (result.authorUsername === request.auth.credentials.username) {
+                    this.db.run('UPDATE posts SET text = ? WHERE id = ?',
+                        [post.text, post.id],
+                        function (err) {
+                            if (err) throw err;
+                            if (this.changes > 0) {
+                                console.log('Updated: ', request.raw.req.url + `/${post.id}`);
+                                return reply(post);
+                            }
+                            return reply(Boom.notFound(`Post with id: ${post.id} was not found`));
+                        })
+                } else {
+                    return reply(Boom.unauthorized('Cannot edit posts you do not own'));
+                }
+            });
+    }
+}
 
 exports.remove = function (request, reply) {
-    if (request.auth.credentials.role === 'admin') {
+    if (request.auth.credentials.role > 0) {
         this.db.run('DELETE FROM comments WHERE postId = ?', [request.params.postId],
             function (err) {
                 if (err) throw err;
@@ -101,7 +131,7 @@ exports.remove = function (request, reply) {
                         function (err) {
                             if (err) throw err;
                             if (this.changes > 0) {
-                                console.log('Deleted: ', request.raw.req.url , ' comments');
+                                console.log('Deleted: ', request.raw.req.url, ' comments');
                             }
                         });
                     this.db.run('DELETE FROM posts WHERE id = ?', [request.params.postId],

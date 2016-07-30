@@ -102,16 +102,16 @@ module.exports = [
         },
         handler: Users.findAll
     },
-    {
-        method: 'GET',
-        path: '/api/me',
-        config: {
-            auth: {
-                strategy: 'session'
-            },
-        },
-        handler: Users.me
-    },
+    //{
+    //    method: 'GET',
+    //    path: '/api/me',
+    //    config: {
+    //        auth: {
+    //            strategy: 'session'
+    //        },
+    //    },
+    //    handler: Users.me
+    //},
     {
         method: 'GET',
         path: '/api/users/{username}',
@@ -148,22 +148,6 @@ module.exports = [
             },
         }
     },
-
-    //{
-    //    method: 'POST',
-    //    path: '/api/users/{username}/posts',
-    //    handler: Posts.create,
-    //    config: {
-    //        validate: {
-    //            params: {
-    //                username: Joi.string().min(5).required(),
-    //            }
-    //        },
-    //        auth: {
-    //            strategy: 'session'
-    //        },
-    //    }
-    //},
 
 /**
  * End of USER_ROUTES
@@ -230,15 +214,16 @@ module.exports = [
     },
     {
         method: 'PUT',
-        path: '/api/posts/{postId}',
+        path: '/api/posts',
         handler: Posts.edit,
         config: {
             validate: {
-                params: {
-                    postId: Joi.number().min(1).required()
-                },
+                //params: {
+                //    postId: Joi.number().min(1).required()
+                //},
                 payload: Joi.object({
-                    text: Joi.string().min(2).required()
+                    text: Joi.string().min(2).required(),
+                    id: Joi.number().min(1).required(),
                 })
             },
             auth: {
@@ -278,21 +263,6 @@ module.exports = [
             }
         }
     },
-    //{
-    //    method: 'GET',
-    //    path: '/api/posts/{postId}/comments',
-    //    handler: Comments.findByPostId,
-    //    config: {
-    //        validate: {
-    //            params: {
-    //                postId: Joi.number().integer().min(1).required()
-    //            }
-    //        },
-    //        auth: {
-    //            strategy: 'session'
-    //        }
-    //    }
-    //},
     {
         method: 'POST',
         path: '/api/comments',
@@ -303,6 +273,22 @@ module.exports = [
                     text: Joi.string().min(2).required(),
                     postId: Joi.number().min(1).required(),
                     commentId: Joi.number().min(1),
+                })
+            },
+            auth: {
+                strategy: 'session'
+            }
+        }
+    },
+    {
+        method: 'PUT',
+        path: '/api/comments',
+        handler: Comments.edit,
+        config: {
+            validate: {
+                payload: Joi.object({
+                    text: Joi.string().min(2).required(),
+                    id: Joi.number().min(1).required()
                 })
             },
             auth: {

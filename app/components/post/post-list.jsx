@@ -2,8 +2,6 @@
 
 import React from "react";
 import Post from "./post";
-//import CommentForm from "../comment/comment-form";
-//import CommentList from "../comment/comment-list";
 import CommentComponent from "../comment/comment-component";
 
 export default class PostList extends React.Component {
@@ -21,7 +19,7 @@ export default class PostList extends React.Component {
                 });
                 return (
                     <div className="jumbotron" key={post.id}>
-                        <Post post={post} onPostDelete={this.props.handlePostDelete}>
+                        <Post post={post} onPostUpdate={this.props.handlePostUpdate} onPostDelete={this.props.handlePostDelete}>
                             {post.text}
                         </Post>
                         <CommentComponent postAuthor={post.authorUsername} comments={postComments}
@@ -55,8 +53,7 @@ PostList.propTypes = {
             date_created: React.PropTypes.string.isRequired
         })
     ),
-    handleCommentSubmit: React.PropTypes.func,
-    handleCommentDelete: React.PropTypes.func,
-    handlePostDelete: React.PropTypes.func
+    handlePostDelete: React.PropTypes.func,
+    handlePostUpdate: React.PropTypes.func
 };
 

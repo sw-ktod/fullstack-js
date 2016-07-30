@@ -11,14 +11,20 @@ export default class CommentComponent extends React.Component{
         };
         this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
         this.handleCommentDelete = this.handleCommentDelete.bind(this);
+        this.handleCommentUpdate = this.handleCommentUpdate.bind(this);
         this.populate = this.populate.bind(this);
 
     }
     render(){
         return (
-            <div style={{border: 'solid 1px black'}}>
-                <CommentList postId={this.props.postId} postAuthor={this.props.postAuthor} data={this.state.comments} parentCommentId={this.props.parentCommentId}
-                             onCommentDelete={this.handleCommentDelete}/>
+            <div>
+                <CommentList postId={this.props.postId}
+                             postAuthor={this.props.postAuthor}
+                             data={this.state.comments}
+                             parentCommentId={this.props.parentCommentId}
+                             onCommentDelete={this.handleCommentDelete}
+                             onCommentUpdate={this.handleCommentUpdate}
+                    />
                 <CommentForm onCommentSubmit={this.handleCommentSubmit} postId={this.props.postId}/>
             </div>
         )
@@ -40,13 +46,30 @@ export default class CommentComponent extends React.Component{
     handleCommentDelete(commentId) {
         this.context.commentServices.deleteComment(commentId)
             .then(()=> {
-                let comments = this.state.comments.filter((comment)=> {
+                let commentArray = this.state.comments.filter((comment)=> {
                     return comment.id !== commentId;
                 });
-                this.setState({comments: comments})
+                this.setState({comments: commentArray})
             }, (err)=> {
                 this.context.errorHandler.alertError(err);
             });
+    }
+
+    handleCommentUpdate(comment){
+        "use strict";
+        this.context.commentServices.updateComment(comment)
+            .then((result)=>{
+                let commentArray = this.state.posts;
+                commentArray.forEach((comment)=>{
+                    if(comment.id === result.id){
+                        commentArray[commentArray.indexOf(comment)].text = result.text;
+                        return;
+                    }
+                });
+                this.setState({comments: commentArray});
+            },(err)=>{
+                this.context.errorHandler.alertError(err);
+            })
     }
 
     populate(props){

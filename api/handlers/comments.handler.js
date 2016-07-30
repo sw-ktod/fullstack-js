@@ -44,18 +44,17 @@ exports.create = function (request, reply) {
     );
 };
 exports.edit = function (request, reply) {
-    if (request.auth.credentials.role === 'admin') {
-        let comment = request.payload;
+    let comment = request.payload;
+    if (request.auth.credentials.role > 0) {
         this.db.run('UPDATE comments SET text = ? WHERE id = ?',
             [comment.text, comment.id],
             (err)=> {
                 if (err) throw err;
-
-                console.log('Updated: ', uri);
-                return reply(comment).updated(uri);
+                console.log('Updated: ', request.raw.req.url + `/${comment.id}`);
+                return reply(comment);
             })
     } else {
-        this.db.get('SELECT authorUsername, postId FROM comments WHERE id = ?', [request.params.commentId],
+        this.db.get('SELECT authorUsername, postId FROM comments WHERE id = ?', [comment.id],
             (err, result) => {
                 if (err) throw err;
                 if (typeof result !== 'undefined') {
@@ -73,21 +72,21 @@ exports.edit = function (request, reply) {
                                             (err)=> {
                                                 if (err) throw err;
 
-                                                console.log('Updated: ', uri);
-                                                return reply(comment).updated(uri);
+                                                console.log('Updated: ', request.raw.req.url + `/${comment.id}`);
+                                                return reply(comment);
                                             })
                                     }
                                 }
                             }
                         )
                     } else {
-                        this.db.run('DELETE FROM comments WHERE id = ?', [request.params.commentId],
-                            (err) => {
+                        this.db.run('UPDATE comments SET text = ? WHERE id = ?',
+                            [comment.text, comment.id],
+                            (err)=> {
                                 if (err) throw err;
-                                console.log('Deleted: ', request.raw.req.url);
-                                return reply(`Comment ${request.params.commentId} was deleted successfully.`);
-                            }
-                        );
+                                console.log('Updated: ', request.raw.req.url + `/${comment.id}`);
+                                return reply(comment);
+                            })
                     }
 
                 }
@@ -96,7 +95,7 @@ exports.edit = function (request, reply) {
 };
 
 exports.remove = function (request, reply) {
-    if (request.auth.credentials.role === 'admin') {
+    if (request.auth.credentials.role > 0) {
         this.db.run('DELETE FROM comments WHERE id = ? OR commentId = ?',
             [request.params.commentId, request.params.commentId],
             (err) => {

@@ -7,7 +7,7 @@ export default class CommentServices {
     }
 
     submitComment(comment) {
-        let url = 'api/comments';
+        let url = this.url;
         return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'POST',
@@ -21,7 +21,7 @@ export default class CommentServices {
     }
 
     getComments() {
-        let url = '/api/comments';
+        let url = this.url;
         return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'GET',
@@ -33,8 +33,22 @@ export default class CommentServices {
         });
     }
 
+    updateComment(comment){
+        let url = this.url;
+        return new Promise((resolve, reject)=>{
+            $.ajax({
+                method: 'PUT',
+                url: url,
+                dataType: 'json',
+                cache: false,
+                data: comment
+            }).done(resolve)
+                .fail(reject);
+        });
+    }
+
     deleteComment(commentId) {
-        let url = '/api/comments/' + commentId;
+        let url = this.url + `/${commentId}`;
         return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'DELETE',

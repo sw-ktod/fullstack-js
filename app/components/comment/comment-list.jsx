@@ -22,14 +22,14 @@ export default class CommentList extends React.Component {
         });
         let commentNodes = comments
             .map((comment)=> {
-
                 return (
                     <div className="well well-sm" key={comment.id}>
                         <Comment postAuthor={this.props.postAuthor}
                                  author={comment.authorUsername}
                                  commentId={comment.id}
                                  created={comment.date_created}
-                                 onCommentDelete={this.props.onCommentDelete}>
+                                 onCommentDelete={this.props.onCommentDelete}
+                                 onCommentUpdate={this.props.onCommentUpdate}>
                             {comment.text}
                         </Comment>
                         <CommentComponent postId={this.props.postId} parentCommentId={comment.id} postAuthor={this.props.postAuthor} comments={remaining} />
@@ -52,9 +52,11 @@ CommentList.propTypes = {
             date_created: React.PropTypes.string.isRequired
         })
     ),
+    children: React.PropTypes.node,
     parentCommentId: React.PropTypes.number,
     postId: React.PropTypes.number.isRequired,
     postAuthor: React.PropTypes.string.isRequired,
     onCommentDelete: React.PropTypes.func.isRequired,
+    onCommentUpdate: React.PropTypes.func.isRequired,
 };
 
