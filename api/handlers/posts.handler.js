@@ -101,7 +101,7 @@ exports.edit = function (request, reply) {
                 }
             });
     }
-}
+};
 
 exports.remove = function (request, reply) {
     if (request.auth.credentials.role > 0) {

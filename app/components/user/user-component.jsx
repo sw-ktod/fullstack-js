@@ -16,6 +16,7 @@ export default class UserComponent extends React.Component {
         };
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleUserEdit = this.handleUserEdit.bind(this);
+        this.handleUserDelete = this.handleUserDelete.bind(this);
         this.populatePage = this.populatePage.bind(this);
 
     }
@@ -37,7 +38,7 @@ export default class UserComponent extends React.Component {
         return (
             <div>
                 <h2>Users:</h2>
-                <UserList data={this.state.data}/>
+                <UserList data={this.state.data} handleUserEdit={this.handleUserEdit} handleUserDelete={this.handleUserDelete}/>
             </div>
         )
     }
@@ -52,19 +53,48 @@ export default class UserComponent extends React.Component {
     }
 
     handleUserEdit(data) {
-        this.context.userServices.edit(this.state.user.username, data)
+        this.context.userServices.edit(data)
             .then((result)=> {
                 let user = this.context.authServices.getStoredData('user').account;
                 let role = user.role;
                 let editedUser = result;
-                if(role){
+                if (role) {
                     editedUser.role = role;
                 }
-                this.context.authServices.storeData('user', {account: editedUser});
-                console.log(result);
+                if(user.username === editedUser.username){
+                    editedUser.id = user.id;
+                    this.context.authServices.storeData('user', {account: editedUser});
+                    delete editedUser.role;
+                    this.setState({
+                        user: editedUser,
+                    });
+                }else{
+                    let userArray = this.state.data;
+                    userArray.forEach(function (usr) {
+                        if(usr.username === editedUser.username) {
+                            userArray[userArray.indexOf(usr)] = editedUser;
+                            return;
+                        }
+                    });
+                    this.setState({
+                        data:userArray,
+                    })
+                }
             }, (err)=> {
                 this.context.errorHandler.alertError(err);
             });
+    }
+
+    handleUserDelete(userId) {
+        this.context.userServices.removeUser(userId)
+            .then(()=> {
+                let users = this.state.data.filter((user)=>{
+                    return user.id !== userId;
+                });
+                this.setState({data:users})
+            }, (err)=> {
+                this.context.errorHandler.alertError(err);
+            })
     }
 
     populatePage(params) {
@@ -131,6 +161,7 @@ export default class UserComponent extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
         this.populatePage(nextProps.params);
     }
 }

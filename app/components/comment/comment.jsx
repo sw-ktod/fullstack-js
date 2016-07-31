@@ -29,14 +29,17 @@ export default class Comment extends React.Component {
         }
         this.props.onCommentDelete(commentId);
     }
-    onCommentUpdate(){
+    onCommentUpdate(e){
+        e.preventDefault();
         this.props.onCommentUpdate({id: this.props.commentId, text: this.state.text});
         this.triggerEditMode();
     }
     triggerEditMode(){
         this.setState({editMode: !this.state.editMode})
     }
-    cancelEdit(){
+    cancelEdit(e){
+        e.preventDefault();
+
         if(this.state.text !== this.props.children){
             this.setState({text: this.props.children});
         }

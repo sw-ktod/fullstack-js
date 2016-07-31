@@ -36,12 +36,12 @@ export default class PostForm extends React.Component {
             <form className="form container">
                 <div className="col-md-1"></div>
                 <input className="input-lg col-md-6" type="text" value={this.state.text}
-                       placeholder="What's on your mind..."
-                       onChange={this.handleTextChange}/>
+                   placeholder="What's on your mind..."
+                   onChange={this.handleTextChange}/>
 
                 <div className="col-md-1"></div>
                 <input className="col-md-3 btn btn-default btn-lg" type="submit" value="Post"
-                       onClick={this.handleSubmit}/>
+                   onClick={this.handleSubmit}/>
 
                 <div className="col-md-1"></div>
                 <br />

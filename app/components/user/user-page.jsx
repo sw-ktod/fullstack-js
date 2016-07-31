@@ -37,7 +37,7 @@ export default class UserPage extends React.Component {
             return (
                 <div className="userPage">
                     <User user={this.props.user} />
-                    <div className="userRelatedPosts">
+                    <div className="col-md-12 userRelatedPosts">
                         <PostComponent username={this.props.user.username} />
                     </div>
                 </div>

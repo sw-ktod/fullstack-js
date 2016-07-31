@@ -29,6 +29,10 @@ export default class NavigationComponent extends React.Component {
         let linkToUser = "/users/" + user.account.username;
         let linkToUserEdit = "/users/" + user.account.username + "/edit";
         let linkToPasswordEditForm = linkToUser + "/password";
+        let linkToUsers = user.account.role ? (
+            <li>
+                <Link to="/users">Users</Link>
+            </li>) : '';
         return (
             <nav className="navbar navbar-default">
                 <div className="container-fluid">
@@ -36,15 +40,12 @@ export default class NavigationComponent extends React.Component {
                         <li>
                             <Link to="/">Home</Link>
                         </li>
-                        <li>
-                            <Link to="/users">Users</Link>
-                        </li>
+                        {linkToUsers}
                     </ul>
                     <form className="navbar-form navbar-left" role="search">
                         <div className="form-group">
                             <input type="text" className="form-control" placeholder="Search"/>
                         </div>
-                            <button type="submit" className="btn btn-default">Submit</button>
                     </form>
                     <ul className="navbar-right nav navbar-nav">
                         <li>

@@ -36,18 +36,19 @@ export default class UserEditForm extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        let firstName = this.state.firstName.trim();
-        let lastName = this.state.lastName.trim();
-        let email = this.state.email.trim();
-        let dateOfBirth = this.state.dateOfBirth.trim();
+        let firstName = this.state.firstName;
+        let lastName = this.state.lastName;
+        let email = this.state.email;
+        let dateOfBirth = this.state.dateOfBirth;
 
-        this.props.handleUserEdit({firstName: firstName, lastName: lastName, email: email, dateOfBirth: dateOfBirth});
+        this.props.handleUserEdit({username: this.props.user.username, firstName: firstName, lastName: lastName, email: email, dateOfBirth: dateOfBirth});
     }
 
     render() {
         return (
             <form className="col-md-6 text-center">
                 <h2>Edit Profile</h2>
+                {this.props.children}
 
                 <div className="form-group">
                     <label className="control-label" htmlFor="username">Username </label>
@@ -75,7 +76,6 @@ export default class UserEditForm extends React.Component {
                     <input className="input-sm form-control" type="date" value={this.state.dateOfBirth  || ''} id="dateOfBirth"
                            onChange={this.handleDateOfBirthChange}/>
                 </div>
-
                 <input className="input-sm form-control" type="submit" value="Save changes"
                        onClick={this.handleSubmit}/>
             </form>
@@ -100,7 +100,8 @@ UserEditForm.propTypes = {
         firstName: React.PropTypes.string,
         lastName: React.PropTypes.string,
         email: React.PropTypes.string,
-        dateOfBirth: React.PropTypes.string,
+        dateOfBirth: React.PropTypes.any,
     }),
     handleUserEdit: React.PropTypes.func,
+    children: React.PropTypes.node,
 };

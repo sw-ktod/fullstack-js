@@ -8,6 +8,7 @@ const Good = require('good');
 const Boom = require('boom');
 const Sqlite3 = require('sqlite3');
 const routes = require('./routes');
+const md5 = require('md5');
 
 // Initialize DBs
 const DB_FILE = path.join(__dirname, 'ApiDb.sqlite');
@@ -32,6 +33,13 @@ const db = new Sqlite3.Database(DB_FILE, (err) => {
                     function (err) {
                         if (err) throw err;
                         console.log(`Table "users" successfully created in db: ${DB_FILE}`);
+
+                        db.run('INSERT INTO users (username, password, role) VALUES (?,?,?)',
+                            ['admin', md5('123321'), 1],
+                            function (err) {
+                                if (err) throw err;
+                                console.log(`Admin user created (admin, 123321) in db: ${DB_FILE}`);
+                            })
                     });
             }
         });
@@ -60,7 +68,8 @@ const db = new Sqlite3.Database(DB_FILE, (err) => {
             if (!result) {
                 db.run(`CREATE TABLE comments (
                     id INTEGER PRIMARY KEY,
-                    text TEXT NOT NULL, authorUsername TEXT NOT NULL,
+                    text TEXT NOT NULL,
+                    authorUsername TEXT NOT NULL,
                     postId INTEGER NOT NULL,
                     commentId INTEGER,
                     date_created DATETIME NOT NULL

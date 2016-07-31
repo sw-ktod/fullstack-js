@@ -9,9 +9,10 @@ export default class Post extends React.Component {
         super(props, context);
         this.props = props;
         this.triggerEditMode = this.triggerEditMode.bind(this);
-        this.handleDelete = this.handleDelete.bind(this);
+        this.onPostDelete = this.onPostDelete.bind(this);
         this.onPostUpdate = this.onPostUpdate.bind(this);
         this.handleTextChange = this.handleTextChange.bind(this);
+        this.cancelEdit = this.cancelEdit.bind(this);
 
         this.state = {
             editMode: undefined,
@@ -23,7 +24,7 @@ export default class Post extends React.Component {
         this.setState({text: e.target.value});
     }
 
-    handleDelete() {
+    onPostDelete() {
         if (!this.props.post.id) {
             return;
         }
@@ -33,8 +34,16 @@ export default class Post extends React.Component {
     triggerEditMode(){
         this.setState({editMode: !this.state.editMode})
     }
-    onPostUpdate(){
+    onPostUpdate(e){
+        e.preventDefault();
         this.props.onPostUpdate({id: this.props.post.id, text: this.state.text});
+        this.triggerEditMode();
+    }
+    cancelEdit(e){
+        e.preventDefault();
+        if(this.state.text !== this.props.children){
+            this.setState({text: this.props.children});
+        }
         this.triggerEditMode();
     }
 
@@ -48,11 +57,9 @@ export default class Post extends React.Component {
             link = <Link to={receiverLink}>{this.props.post.receiverUsername} </Link>
         }
         let deleteButton = (this.props.post.authorUsername === currentUser.username || this.props.post.receiverUsername === currentUser.username || currentUser.role > 0) ?
-            (<a className="cursor-pointer pull-right" onClick={this.handleDelete}>x</a>) : '';
+            (<a className="cursor-pointer pull-right" onClick={this.onPostDelete}>x</a>) : '';
         let editButton = (this.props.post.authorUsername === currentUser.username || currentUser.role > 0) ?
             (<a className="cursor-pointer pull-right" onClick={this.triggerEditMode}>Edit</a>) : '';
-        let cancelButton = (<a className="cursor-pointer pull-right" onClick={this.triggerEditMode} >Cancel</a>);
-        let submitButton = (<a className="cursor-pointer pull-right" onClick={this.onPostUpdate} >Submit</a>);
 
         if(this.state.editMode){
             return (
@@ -62,9 +69,9 @@ export default class Post extends React.Component {
                         {link ? '->' : ''}
                         {link ? link : ''}:
                     </h3>
-                    {cancelButton}
-                    {submitButton}
                     <input onChange={this.handleTextChange} type="text" value={this.state.text}/>
+                    <input type="submit" onClick={this.onPostUpdate} value="Update" />
+                    <input type="submit" onClick={this.cancelEdit} value="Cancel" />
                     <h5>{this.props.post.date_created}</h5>
                 </div>
             );
@@ -85,7 +92,6 @@ export default class Post extends React.Component {
         );
     }
 }
-//<button onClick={this.handleDelete}>Delete </button>
 
 Post.propTypes = {
     post: React.PropTypes.shape({

@@ -45,8 +45,9 @@ export default class UserServices {
                 .fail(reject);
         });
     }
-    edit(username, data) {
-        let url = this.url + '/' + username;
+    edit(data) {
+        console.log(data);
+        let url = this.url;
         return new Promise((resolve, reject)=> {
             $.ajax({
                 method: 'PUT',
@@ -57,6 +58,17 @@ export default class UserServices {
             }).done(resolve)
                 .fail(reject);
         })
+    }
+
+    removeUser(userId){
+        let url = this.url +'/' + userId
+        return new Promise((resolve, reject)=> {
+            $.ajax({
+                method: 'DELETE',
+                url: url
+            }).done(resolve)
+                .fail(reject);
+        });
     }
 
     changePassword(data) {

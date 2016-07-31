@@ -102,16 +102,6 @@ module.exports = [
         },
         handler: Users.findAll
     },
-    //{
-    //    method: 'GET',
-    //    path: '/api/me',
-    //    config: {
-    //        auth: {
-    //            strategy: 'session'
-    //        },
-    //    },
-    //    handler: Users.me
-    //},
     {
         method: 'GET',
         path: '/api/users/{username}',
@@ -129,14 +119,12 @@ module.exports = [
     },
     {
         method: 'PUT',
-        path: '/api/users/{username}',
+        path: '/api/users',
         handler: Users.edit,
         config: {
             validate: {
-                params: {
-                    username: Joi.string().alphanum().min(5).max(50).required()
-                },
                 payload: {
+                    username: Joi.string().alphanum().min(5).max(50),
                     firstName: Joi.string().max(50),
                     lastName: Joi.string().max(50),
                     email: Joi.string().email().max(300),
@@ -148,7 +136,21 @@ module.exports = [
             },
         }
     },
-
+    {
+        method: 'DELETE',
+        path: '/api/users/{username}',
+        handler: Users.remove,
+        config: {
+            validate: {
+                params: {
+                    username: Joi.string().alphanum().min(2).required()
+                }
+            },
+            auth: {
+                strategy: 'session'
+            }
+        }
+    },
 /**
  * End of USER_ROUTES
  */
@@ -218,9 +220,6 @@ module.exports = [
         handler: Posts.edit,
         config: {
             validate: {
-                //params: {
-                //    postId: Joi.number().min(1).required()
-                //},
                 payload: Joi.object({
                     text: Joi.string().min(2).required(),
                     id: Joi.number().min(1).required(),
@@ -315,16 +314,4 @@ module.exports = [
  * End of COMMENT_ROUTES
  */
 
-    //{
-    //    method: 'DELETE',
-    //    path: '/api/users/{userId}',
-    //    handler: Users.remove,
-    //    config: {
-    //        validate: {
-    //            params: {
-    //                userId: Joi.number().integer().min(1).required()
-    //            }
-    //        }
-    //    }
-    //}
 ];
