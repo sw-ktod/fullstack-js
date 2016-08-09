@@ -24,6 +24,7 @@ export default class ErrorHandler {
                 title: error.responseJSON.error,
                 text: error.responseJSON.message.replace(/\//g, ''),
                 type: "error",
+                animation: "slide-from-top",
                 confirmButtonText: "Ok"
             }
         );
@@ -34,6 +35,7 @@ export default class ErrorHandler {
             {
                 title: message,
                 type: "success",
+                animation: "slide-from-top",
                 confirmButtonText: "Ok"
             }
         );
@@ -47,7 +49,8 @@ export default class ErrorHandler {
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
             confirmButtonText: "Yes, continue!",
-            cancelButtonText: "No, cancel plx!",
+            cancelButtonText: "No, cancel!",
+            animation: "slide-from-top",
             closeOnConfirm: false,
             closeOnCancel: true
         }, callback);

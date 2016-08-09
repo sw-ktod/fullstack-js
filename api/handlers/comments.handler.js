@@ -11,9 +11,9 @@ exports.findAll = function (request, reply) {
         sqlQuery += ' WHERE authorId = ?';
         qParams.push(request.query.authorId);
     }
-    this.db.all(sqlQuery, qParams, (err, results) => {
+    this.db.all(sqlQuery, qParams, (err, result) => {
         if (err) throw err;
-        return reply(results);
+        return reply({status:200, comments:result});
     });
 };
 
@@ -22,7 +22,7 @@ exports.find = function (request, reply) {
         (err, result) => {
             if (err) throw err;
             if (typeof result !== 'undefined') {
-                return reply(result);
+                return reply({status:200, comments:result});
             }
         }
     );
@@ -39,7 +39,7 @@ exports.create = function (request, reply) {
             comment.authorUsername = request.auth.credentials.username;
             const uri = request.raw.req.url + '/' + comment.id;
             console.log('Created: ', uri);
-            return reply(comment).created(uri);
+            return reply({status:200, comment:comment, message:`Successfully created comment for post ${comment.postId}`}).created(uri);
         }
     );
 };

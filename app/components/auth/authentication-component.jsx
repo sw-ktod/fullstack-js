@@ -25,11 +25,12 @@ export default class AuthenticationComponent extends React.Component {
     onUserLogin(user) {
         this.context.authServices.userLogin(user)
             .then((result)=> {
-                if (result.role < 1) {
-                    delete result.role;
+                console.log(result);
+                if (result.user.role < 1) {
+                    delete result.user.role;
                 }
                 this.context.authServices.storeData("user", {account: result.user});
-                if (!result.email) {
+                if (!result.user.email) {
                     this.context.router.push({pathname: "/users/" + result.user.username + "/edit"});
                 } else {
                     this.context.router.push({pathname: "/"});

@@ -33,9 +33,9 @@ export default class CommentComponent extends React.Component{
             comment.commentId = this.props.parentCommentId;
         }
         this.context.commentServices.submitComment(comment)
-            .then((result) => {
+            .then((response) => {
                 let commentsArray = this.state.comments;
-                commentsArray.push(result);
+                commentsArray.push(response.comment);
                 this.setState({comments: commentsArray})
             }, (err)=> {
                 this.context.responseHandler.error(err);
@@ -43,7 +43,7 @@ export default class CommentComponent extends React.Component{
     }
 
     handleCommentDelete(commentId) {
-        this.context.responseHandler.warning("", (confirmed)=>{
+        this.context.responseHandler.warning('All related comments will be removed as well.', (confirmed)=>{
             if(confirmed){
                 this.context.commentServices.deleteComment(commentId)
                     .then((response)=> {
@@ -60,7 +60,6 @@ export default class CommentComponent extends React.Component{
     }
 
     handleCommentUpdate(comment){
-        "use strict";
         this.context.commentServices.updateComment(comment)
             .then((response)=>{
                 let commentArray = this.state.comments;

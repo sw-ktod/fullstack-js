@@ -33,7 +33,7 @@ export default class PostComponent extends React.Component {
     getUserRelatedPosts(username) {
         this.context.postServices.getUserRelatedPosts(username)
             .then((response)=> {
-                let dataArray = response.sort((aPost, bPost)=> {
+                let dataArray = response.posts.sort((aPost, bPost)=> {
                     return Date.parse(aPost.date_created) < Date.parse(bPost.date_created);
                 });
                 this.setState({posts: dataArray})
@@ -42,7 +42,7 @@ export default class PostComponent extends React.Component {
             });
         this.context.commentServices.getComments()
             .then((response)=> {
-                this.setState({comments: response});
+                this.setState({comments: response.comments});
             }, (err)=> {
                 this.context.responseHandler.error(err);
             });
@@ -86,7 +86,7 @@ export default class PostComponent extends React.Component {
 
 
     handlePostDelete(postId) {
-        this.context.responseHandler.warning('',
+        this.context.responseHandler.warning('All post related comments will be removed as well.',
             (confirmed) => {
                 if (confirmed) {
                     this.context.postServices.removePost(postId)
@@ -103,7 +103,7 @@ export default class PostComponent extends React.Component {
                             this.context.responseHandler.error(err);
                         })
                 }
-        })
+            })
     }
 
     populate() {
@@ -112,19 +112,20 @@ export default class PostComponent extends React.Component {
                 this.getUserRelatedPosts(this.props.username);
             } else {
                 this.context.postServices.getPosts()
-                    .then((result)=> {
-                        let dataArray = result.sort((aPost, bPost)=> {
+                    .then((response)=> {
+                        let dataArray = response.posts.sort((aPost, bPost)=> {
                             return Date.parse(aPost.date_created) < Date.parse(bPost.date_created);
                         });
                         this.setState({posts: dataArray})
                     }, (err)=> {
                         this.context.responseHandler.error(err);
                     });
-                this.context.commentServices.getComments().then((result)=> {
-                    this.setState({comments: result})
-                }, (err)=> {
-                    this.context.responseHandler.error(err);
-                });
+                this.context.commentServices.getComments()
+                    .then((response)=> {
+                        this.setState({comments: response.comments})
+                    }, (err)=> {
+                        this.context.responseHandler.error(err);
+                    });
             }
         } else {
             this.context.router.push({pathname: '/auth'});

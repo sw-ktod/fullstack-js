@@ -11,9 +11,9 @@ exports.findAll = function (request, reply) {
         sqlQuery += ' WHERE authorUsername = ?';
         qParams.push(request.query.author);
     }
-    this.db.all(sqlQuery, qParams, function (err, results) {
+    this.db.all(sqlQuery, qParams, function (err, result) {
         if (err) throw err;
-        return reply(results);
+        return reply({status:200, posts:result});
     });
 };
 exports.findRelatedPostsByUsername = function (request, reply) {
@@ -26,7 +26,7 @@ exports.findRelatedPostsByUsername = function (request, reply) {
         function (err, result) {
             if (err) throw err;
             if (typeof result !== 'undefined') {
-                return reply(result);
+                return reply({status:200, posts:result});
             }
             else {
                 return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
@@ -40,7 +40,7 @@ exports.find = function (request, reply) {
         function (err, result) {
             if (err) throw err;
             if (typeof result !== 'undefined') {
-                return reply(result);
+                return reply({status:200, posts:result});
             }
             else {
                 return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));

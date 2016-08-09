@@ -82,7 +82,7 @@ export default class NavigationComponent extends React.Component {
     }
 
     onUserLogout() {
-        this.context.responseHandler.warning("", (confirmed)=> {
+        this.context.responseHandler.warning('You are being missed already', (confirmed)=> {
             if (confirmed) {
                 this.context.authServices.handleUserLogout()
                     .then((response)=> {
