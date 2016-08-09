@@ -61,7 +61,7 @@ export default class Comment extends React.Component {
                         <Link to={authorLink}> {this.props.author} </Link>
                     </h4>
                     <input type="text" onChange={this.handleTextChange} value={this.state.text} />
-                    <input type="submit" onClick={this.onCommentUpdate} value="Update" />
+                    <input type="button" onClick={this.onCommentUpdate} value="Update" />
                     <input type="submit" onClick={this.cancelEdit} value="Cancel" />
                     <h6 className="col-md-12">{this.props.created}</h6>
                 </div>

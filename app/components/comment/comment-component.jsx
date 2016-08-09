@@ -17,15 +17,14 @@ export default class CommentComponent extends React.Component{
     }
     render(){
         return (
-            <div>
+            <div className="border-window">
+                <CommentForm onCommentSubmit={this.handleCommentSubmit} postId={this.props.postId}/>
                 <CommentList postId={this.props.postId}
                              postAuthor={this.props.postAuthor}
                              data={this.state.comments}
                              parentCommentId={this.props.parentCommentId}
                              onCommentDelete={this.handleCommentDelete}
-                             onCommentUpdate={this.handleCommentUpdate}
-                    />
-                <CommentForm onCommentSubmit={this.handleCommentSubmit} postId={this.props.postId}/>
+                             onCommentUpdate={this.handleCommentUpdate}/>
             </div>
         )
     }
@@ -39,20 +38,25 @@ export default class CommentComponent extends React.Component{
                 commentsArray.push(result);
                 this.setState({comments: commentsArray})
             }, (err)=> {
-                this.context.errorHandler.alertError(err);
+                this.context.responseHandler.error(err);
             });
     }
 
     handleCommentDelete(commentId) {
-        this.context.commentServices.deleteComment(commentId)
-            .then(()=> {
-                let commentArray = this.state.comments.filter((comment)=> {
-                    return comment.id !== commentId;
-                });
-                this.setState({comments: commentArray})
-            }, (err)=> {
-                this.context.errorHandler.alertError(err);
-            });
+        this.context.responseHandler.warning("", (confirmed)=>{
+            if(confirmed){
+                this.context.commentServices.deleteComment(commentId)
+                    .then(()=> {
+                        let commentArray = this.state.comments.filter((comment)=> {
+                            return comment.id !== commentId;
+                        });
+                        this.setState({comments: commentArray})
+                        this.context.responseHandler.success("Successfully deleted comment.");
+                    }, (err)=> {
+                        this.context.responseHandler.error(err);
+                    });
+            }
+        })
     }
 
     handleCommentUpdate(comment){
@@ -67,8 +71,9 @@ export default class CommentComponent extends React.Component{
                     }
                 });
                 this.setState({comments: commentArray});
+                this.context.responseHandler.success("Successfully updated comment.");
             },(err)=>{
-                this.context.errorHandler.alertError(err);
+                this.context.responseHandler.error(err);
             })
     }
 
@@ -101,5 +106,5 @@ CommentComponent.propTypes = {
 CommentComponent.contextTypes = {
     authServices: React.PropTypes.object,
     commentServices: React.PropTypes.object,
-    errorHandler: React.PropTypes.object
+    responseHandler: React.PropTypes.object
 };

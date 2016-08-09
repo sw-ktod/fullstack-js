@@ -6,3 +6,6 @@
 .cursor-pointer {
     cursor: pointer;
 }
+.border-window {
+    border: solid 1px black;
+}

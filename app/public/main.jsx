@@ -11,7 +11,7 @@ import AuthenticationServices from "../services/authentication-services";
 import PostServices from "../services/post-services";
 import CommentServices from "../services/comment-services";
 
-import ErrorHandler from "../common/error-handler";
+import ResponseHandler from "../common/responseHandler";
 
 import NavComponent from "../components/navigation/navigation-component";
 
@@ -39,7 +39,7 @@ class App extends React.Component {
         this.userServices = new UserServices(USER_SERVICE_URL);
         this.postServices = new PostServices(POST_SERVICE_URL);
         this.commentServices = new CommentServices(COMMENT_SERVICE_URL);
-        this.errorHandler = new ErrorHandler(this.authServices, this.context.router)
+        this.responseHandler = new ResponseHandler(this.authServices, this.context.router)
     }
 
     getChildContext() {
@@ -48,7 +48,7 @@ class App extends React.Component {
             userServices: this.userServices,
             postServices: this.postServices,
             commentServices: this.commentServices,
-            errorHandler: this.errorHandler
+            responseHandler: this.responseHandler
         };
     }
 
@@ -83,7 +83,7 @@ App.childContextTypes = {
     userServices: React.PropTypes.object,
     postServices: React.PropTypes.object,
     commentServices: React.PropTypes.object,
-    errorHandler: React.PropTypes.object
+    responseHandler: React.PropTypes.object
 };
 
 ReactDOM.render(routes(), document.getElementById('app'))

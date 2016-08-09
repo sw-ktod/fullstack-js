@@ -42,11 +42,6 @@ export default class NavigationComponent extends React.Component {
                         </li>
                         {linkToUsers}
                     </ul>
-                    <form className="navbar-form navbar-left" role="search">
-                        <div className="form-group">
-                            <input type="text" className="form-control" placeholder="Search"/>
-                        </div>
-                    </form>
                     <ul className="navbar-right nav navbar-nav">
                         <li>
                             <Link to={linkToUser}> {user.account.username} </Link>
@@ -87,12 +82,17 @@ export default class NavigationComponent extends React.Component {
     }
 
     onUserLogout() {
-        this.context.authServices.handleUserLogout()
-            .then(()=> {
-                this.context.authServices.removeStoredData('user');
-                this.context.router.push({pathname: '/auth'});
+        this.context.responseHandler.warning("", (confirmed)=> {
+            if (confirmed) {
+                this.context.authServices.handleUserLogout()
+                    .then(()=> {
+                        this.context.authServices.removeStoredData('user');
+                        this.context.router.push({pathname: '/auth'});
+                        this.context.responseHandler.success("Successfully logged out");
+                    }
+                );
             }
-        );
+        });
     }
 
     toggleDropdown() {
@@ -111,5 +111,6 @@ export default class NavigationComponent extends React.Component {
 NavigationComponent.contextTypes = {
     authServices: React.PropTypes.object,
     router: React.PropTypes.object,
+    responseHandler: React.PropTypes.object,
 };
 

@@ -18,11 +18,11 @@ export default class AuthenticationServices {
     }
 
     isAuthenticated() {
-        return (localStorage.hasOwnProperty('user'));
+        return (localStorage.hasOwnProperty("user"));
     }
 
     validateAuthentication() {
-        let url = 'api/auth';
+        let url = "api/auth";
         return new Promise((resolve, reject) => {
             $.ajax({
                 method: "GET",
@@ -49,7 +49,7 @@ export default class AuthenticationServices {
         let url = this.url + "/register";
         return new Promise((resolve, reject) => {
             $.ajax({
-                method: 'POST',
+                method: "POST",
                 url: url,
                 dataType: "json",
                 data: user,
@@ -63,7 +63,7 @@ export default class AuthenticationServices {
         let url = this.url + "/login";
         return new Promise((resolve, reject) => {
             $.ajax({
-                method: 'POST',
+                method: "POST",
                 url: url,
                 dataType: "json",
                 data: user,

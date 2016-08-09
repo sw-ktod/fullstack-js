@@ -29,7 +29,8 @@ export default class PostComponent extends React.Component {
                           handlePostDelete={this.handlePostDelete}/>
             </div>)
     }
-    getUserRelatedPosts(username){
+
+    getUserRelatedPosts(username) {
         this.context.postServices.getUserRelatedPosts(username)
             .then((response)=> {
                 let dataArray = response.sort((aPost, bPost)=> {
@@ -37,19 +38,20 @@ export default class PostComponent extends React.Component {
                 });
                 this.setState({posts: dataArray})
             }, (err)=> {
-                this.context.errorHandler.alertError(err);
+                this.context.responseHandler.error(err);
             });
         this.context.commentServices.getComments()
             .then((response)=> {
                 this.setState({comments: response});
             }, (err)=> {
-                this.context.errorHandler.alertError(err);
+                this.context.responseHandler.error(err);
             });
     }
+
     handlePostSubmit(post) {
         let currentUser = this.context.authServices.getStoredData('user').account;
         let receiverUsername = this.props.username;
-        if(receiverUsername && receiverUsername !== currentUser.username){
+        if (receiverUsername && receiverUsername !== currentUser.username) {
             post.receiverUsername = receiverUsername;
         }
         this.context.postServices.submitPost(post)
@@ -61,44 +63,54 @@ export default class PostComponent extends React.Component {
                 });
                 this.setState({posts: postArray})
             }, (err)=> {
-                this.context.errorHandler.alertError(err);
+                this.context.responseHandler.error(err);
             });
     }
-    handlePostUpdate(post){
+
+    handlePostUpdate(post) {
         this.context.postServices.editPost(post)
-            .then((result)=>{
+            .then((result)=> {
                 let postArray = this.state.posts;
-                postArray.forEach((post)=>{
-                    if(post.id === result.id){
+                postArray.forEach((post)=> {
+                    if (post.id === result.id) {
                         postArray[postArray.indexOf(post)].text = result.text;
                         return;
                     }
                 });
                 this.setState({posts: postArray});
-            },(err)=>{
-                this.context.errorHandler.alertError(err);
+                this.context.responseHandler.success("Successfully updated post.")
+            }, (err)=> {
+                this.context.responseHandler.error(err);
             })
     }
 
+
     handlePostDelete(postId) {
-        this.context.postServices.removePost(postId)
-            .then(()=> {
-                let postArray = this.state.posts.filter((post)=> {
-                    return post.id !== postId;
-                });
-                let commentArray = this.state.comments.filter((comment)=>{
-                    return comment.postId !== postId;
-                });
-                this.setState({posts: postArray, comments: commentArray});
-            }, (err)=> {
-                this.context.errorHandler.alertError(err);
-            })
+        this.context.responseHandler.warning('',
+            (confirmed) => {
+                if (confirmed) {
+                    this.context.postServices.removePost(postId)
+                        .then(()=> {
+                            let postArray = this.state.posts.filter((post)=> {
+                                return post.id !== postId;
+                            });
+                            let commentArray = this.state.comments.filter((comment)=> {
+                                return comment.postId !== postId;
+                            });
+                            this.setState({posts: postArray, comments: commentArray});
+                            this.context.responseHandler.success("Successfully deleted post.")
+                        }, (err)=> {
+                            this.context.responseHandler.error(err);
+                        })
+                }
+        })
     }
-    populate(){
+
+    populate() {
         if (this.context.authServices.isAuthenticated()) {
-            if(this.props.username){
+            if (this.props.username) {
                 this.getUserRelatedPosts(this.props.username);
-            }else{
+            } else {
                 this.context.postServices.getPosts()
                     .then((result)=> {
                         let dataArray = result.sort((aPost, bPost)=> {
@@ -106,22 +118,24 @@ export default class PostComponent extends React.Component {
                         });
                         this.setState({posts: dataArray})
                     }, (err)=> {
-                        this.context.errorHandler.alertError(err);
+                        this.context.responseHandler.error(err);
                     });
                 this.context.commentServices.getComments().then((result)=> {
                     this.setState({comments: result})
                 }, (err)=> {
-                    this.context.errorHandler.alertError(err);
+                    this.context.responseHandler.error(err);
                 });
             }
         } else {
             this.context.router.push({pathname: '/auth'});
         }
     }
+
     componentDidMount() {
         this.populate();
     }
-    componentWillReceiveProps(){
+
+    componentWillReceiveProps() {
         this.populate();
     }
 }
@@ -133,6 +147,6 @@ PostComponent.contextTypes = {
     postServices: React.PropTypes.object,
     commentServices: React.PropTypes.object,
     router: React.PropTypes.object,
-    errorHandler: React.PropTypes.object
+    responseHandler: React.PropTypes.object
 };
 

@@ -24,7 +24,7 @@ exports.findByUsername = function (request, reply) {
             if (typeof result !== 'undefined') {
                 return reply(result);
             }
-            return reply(Boom.notFound(`User with Username=${request.params.username} not found.`));
+            return reply(Boom.notFound(`User with Username ${request.params.username} not found.`));
         }
     );
 };
@@ -35,30 +35,37 @@ exports.edit = function (request, reply) {
     } else {
         username = request.auth.credentials.username;
     }
+    let id = request.payload.id;
     let firstName = request.payload.firstName.trim();
     let lastName = request.payload.lastName.trim();
     let email = request.payload.email.trim();
     let dateOfBirth = request.payload.dateOfBirth;
-    let role = request.payload.role || 0;
 
     if (request.auth.credentials.role < 1) {
         if (username !== request.auth.credentials.username) {
             return reply(Boom.unauthorized('Cannot edit account you do not own'))
         }
     }
-    this.db.run('UPDATE users SET firstName = ?, lastName = ?, email = ?, dateOfBirth = ?, role = ? WHERE username = ?',
-        [firstName, lastName, email, dateOfBirth, role, username],
+    this.db.run('UPDATE users SET firstName = ?, lastName = ?, email = ?, dateOfBirth = ? WHERE username = ?',
+        [firstName, lastName, email, dateOfBirth, username],
         function (err) {
             if (err) throw err;
             if (this.changes > 0) {
                 console.log('Updated: ', request.raw.req.url);
-                return reply({
+
+                let user = {
+                    id: id,
                     username: username,
                     firstName: firstName,
                     lastName: lastName,
                     email: email,
-                    dateOfBirth: dateOfBirth
-                });
+                    dateOfBirth: dateOfBirth,
+                    role: request.auth.credentials.role
+                }
+                if(!user.role){
+                    delete user.role;
+                }
+                return reply(user);
             } else {
                 return reply(Boom.badRequest(`An error occurred. User ${username} was not updated.`));
             }
@@ -68,7 +75,7 @@ exports.edit = function (request, reply) {
 exports.remove = function (request, reply) {
     if (request.auth.credentials.role > 0) {
         this.db.run('UPDATE posts SET receiverUsername = ? WHERE receiverUsername = ?',
-            [request.params.username],
+            [request.params.username, request.params.username],
             function (err) {
                 if (err) throw err;
                 if (this.changes > 0) {

@@ -14,7 +14,7 @@ exports.login = function (request, reply) {
         reply(Boom.badRequest(`Missing username or password`));
     }
     this.db.get('SELECT id, username,firstName, lastName, email, dateOfBirth, role FROM users WHERE (username = ? AND password = ?)',
-        [user.username, md5(user.password.trim())],
+        [user.username.trim(), md5(user.password.trim())],
         function (err, result) {
             if (err) throw err;
             if (typeof result !== 'undefined') {
@@ -100,7 +100,7 @@ exports.changePassword = function (request, reply) {
 };
 
 exports.logout = function (request, reply) {
-    request.cookieAuth.clear();
+    request.server.app.cache.drop(request.auth.artifacts.__sess);
     return reply("Successfully logged out");
 };
 exports.validateAuthentication = function (request, reply) {

@@ -25,26 +25,28 @@ export default class AuthenticationComponent extends React.Component {
     onUserLogin(user) {
         this.context.authServices.userLogin(user)
             .then((result)=> {
-                if(result.role < 1){
+                if (result.role < 1) {
                     delete result.role;
                 }
-                this.context.authServices.storeData('user', {account: result});
+                this.context.authServices.storeData("user", {account: result});
                 if (!result.email) {
-                    this.context.router.push({pathname: '/users/' + result.username + '/edit'});
+                    this.context.router.push({pathname: "/users/" + result.username + "/edit"});
                 } else {
-                    this.context.router.push({pathname: '/'});
+                    this.context.router.push({pathname: "/"});
                 }
             }, (err)=> {
-                this.context.errorHandler.alertError(err);
+                this.context.responseHandler.error(err);
             });
     }
 
     onUserRegister(user) {
         this.context.authServices.userRegister(user)
             .then((result)=> {
-                console.log(result);
+                this.context.responseHandler.success(result);
+                this.context.responseHandler.success("Registration successful.");
+
             }, (err)=> {
-                this.context.errorHandler.alertError(err);
+                this.context.responseHandler.error(err);
             });
     }
 
@@ -53,12 +55,12 @@ export default class AuthenticationComponent extends React.Component {
 
     componentDidMount() {
         if (this.context.authServices.isAuthenticated()) {
-            this.context.router.push({pathname: '/'});
+            this.context.router.push({pathname: "/"});
         }
     }
 }
 AuthenticationComponent.contextTypes = {
     authServices: React.PropTypes.object,
-    errorHandler: React.PropTypes.object,
+    responseHandler: React.PropTypes.object,
     router: React.PropTypes.object,
 };

@@ -46,7 +46,6 @@ export default class UserServices {
         });
     }
     edit(data) {
-        console.log(data);
         let url = this.url;
         return new Promise((resolve, reject)=> {
             $.ajax({

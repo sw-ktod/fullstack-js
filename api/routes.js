@@ -124,6 +124,7 @@ module.exports = [
         config: {
             validate: {
                 payload: {
+                    id: Joi.number().min(1),
                     username: Joi.string().alphanum().min(5).max(50),
                     firstName: Joi.string().max(50),
                     lastName: Joi.string().max(50),

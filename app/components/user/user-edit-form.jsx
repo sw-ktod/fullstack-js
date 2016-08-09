@@ -41,14 +41,13 @@ export default class UserEditForm extends React.Component {
         let email = this.state.email;
         let dateOfBirth = this.state.dateOfBirth;
 
-        this.props.handleUserEdit({username: this.props.user.username, firstName: firstName, lastName: lastName, email: email, dateOfBirth: dateOfBirth});
+        this.props.handleUserEdit({id:this.props.user.id, username: this.props.user.username, firstName: firstName, lastName: lastName, email: email, dateOfBirth: dateOfBirth});
     }
 
     render() {
         return (
             <form className="col-md-6 text-center">
                 <h2>Edit Profile</h2>
-                {this.props.children}
 
                 <div className="form-group">
                     <label className="control-label" htmlFor="username">Username </label>
@@ -78,6 +77,8 @@ export default class UserEditForm extends React.Component {
                 </div>
                 <input className="input-sm form-control" type="submit" value="Save changes"
                        onClick={this.handleSubmit}/>
+                <br />
+                {this.props.children}
             </form>
         );
     }
@@ -96,6 +97,7 @@ export default class UserEditForm extends React.Component {
 }
 UserEditForm.propTypes = {
     user: React.PropTypes.shape({
+        id: React.PropTypes.number.isRequired,
         username: React.PropTypes.string.isRequired,
         firstName: React.PropTypes.string,
         lastName: React.PropTypes.string,
@@ -103,5 +105,6 @@ UserEditForm.propTypes = {
         dateOfBirth: React.PropTypes.any,
     }),
     handleUserEdit: React.PropTypes.func,
+    cancelUserEdit: React.PropTypes.func,
     children: React.PropTypes.node,
 };

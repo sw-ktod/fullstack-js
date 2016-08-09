@@ -12,7 +12,7 @@ export default class UserComponent extends React.Component {
             user: undefined,
             posts: [],
             comments: [],
-            mode: ''
+            mode: 'default'
         };
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleUserEdit = this.handleUserEdit.bind(this);
@@ -28,7 +28,8 @@ export default class UserComponent extends React.Component {
                     <UserPage mode={this.state.mode} user={this.state.user}
                               posts={this.state.posts} comments={this.state.comments}
                               handleUserEdit={this.handleUserEdit}
-                              handlePasswordChange={this.handlePasswordChange}/>
+                              handlePasswordChange={this.handlePasswordChange}
+                              handleUserDelete={this.handleUserDelete}/>
                 </div>
             );
         }
@@ -45,10 +46,10 @@ export default class UserComponent extends React.Component {
 
     handlePasswordChange(data) {
         this.context.userServices.changePassword(data)
-            .then((result)=> {
-                console.log(result);
+            .then(()=> {
+                this.context.responseHandler.success("Successfully updated password.");
             }, (err)=> {
-                this.context.errorHandler.alertError(err);
+                this.context.responseHandler.error(err);
             });
     }
 
@@ -56,44 +57,39 @@ export default class UserComponent extends React.Component {
         this.context.userServices.edit(data)
             .then((result)=> {
                 let user = this.context.authServices.getStoredData('user').account;
-                let role = user.role;
+
                 let editedUser = result;
-                if (role) {
-                    editedUser.role = role;
-                }
                 if(user.username === editedUser.username){
                     editedUser.id = user.id;
                     this.context.authServices.storeData('user', {account: editedUser});
-                    delete editedUser.role;
                     this.setState({
                         user: editedUser,
                     });
+                    this.context.router.push('/users/' + editedUser.username);
                 }else{
-                    let userArray = this.state.data;
-                    userArray.forEach(function (usr) {
-                        if(usr.username === editedUser.username) {
-                            userArray[userArray.indexOf(usr)] = editedUser;
-                            return;
-                        }
-                    });
-                    this.setState({
-                        data:userArray,
-                    })
+                    this.context.router.push('/users');
                 }
+                this.context.responseHandler.success("Successfully updated user.")
             }, (err)=> {
-                this.context.errorHandler.alertError(err);
+                this.context.responseHandler.error(err);
             });
     }
 
     handleUserDelete(userId) {
-        this.context.userServices.removeUser(userId)
-            .then(()=> {
-                let users = this.state.data.filter((user)=>{
-                    return user.id !== userId;
-                });
-                this.setState({data:users})
-            }, (err)=> {
-                this.context.errorHandler.alertError(err);
+        this.context.responseHandler.warning('',
+            (confirmed)=>{
+                if(confirmed){
+                    this.context.userServices.removeUser(userId)
+                        .then(()=> {
+                            let users = this.state.data.filter((user)=>{
+                                return user.id !== userId;
+                            });
+                            this.setState({data:users})
+                            this.context.responseHandler.success("Successfully deleted user.")
+                        }, (err)=> {
+                            this.context.responseHandler.error(err);
+                    })
+                }
             })
     }
 
@@ -101,7 +97,7 @@ export default class UserComponent extends React.Component {
         /**
          * User page
          */
-        this.setState({mode: params.mode} || '');
+        this.setState({mode: params.mode || 'default', user: undefined});
 
         if (params.username) {
             this.context.userServices.getUserByUsername(params.username)
@@ -110,7 +106,7 @@ export default class UserComponent extends React.Component {
                     /**
                      * Continuing after we've had the user object
                      */
-                    if (!this.state.mode) {
+                    if (this.state.mode === 'default') {
                         this.context.postServices.getUserRelatedPosts(params.username)
                             .then((response)=> {
                                 let dataArray = response.sort((aPost, bPost)=> {
@@ -118,17 +114,22 @@ export default class UserComponent extends React.Component {
                                 });
                                 this.setState({posts: dataArray})
                             }, (err)=> {
-                                this.context.errorHandler.alertError(err);
+                                this.context.responseHandler.error(err);
                             });
                         this.context.commentServices.getComments()
                             .then((response)=> {
                                 this.setState({comments: response});
                             }, (err)=> {
-                                this.context.errorHandler.alertError(err);
+                                this.context.responseHandler.error(err);
                             });
+                    }else{
+                        let currentUser = this.context.authServices.getStoredData('user').account;
+                        if(currentUser.username !== params.username && !currentUser.role){
+                            this.setState({mode:'default'});
+                        }
                     }
                 }, (err)=> {
-                    this.context.errorHandler.alertError(err);
+                    this.context.responseHandler.error(err);
                 });
         }
         else {
@@ -145,7 +146,7 @@ export default class UserComponent extends React.Component {
                         mode: 'default'
                     });
                 }, (err)=> {
-                    this.context.errorHandler.alertError(err);
+                    this.context.responseHandler.error(err);
                 })
         }
     }
@@ -161,8 +162,9 @@ export default class UserComponent extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
-        this.populatePage(nextProps.params);
+        if(nextProps.params !== this.props.params){
+            this.populatePage(nextProps.params);
+        }
     }
 }
 UserComponent.propTypes = {
@@ -174,5 +176,5 @@ UserComponent.contextTypes = {
     commentServices: React.PropTypes.object,
     postServices: React.PropTypes.object,
     router: React.PropTypes.object,
-    errorHandler: React.PropTypes.object,
+    responseHandler: React.PropTypes.object,
 };
