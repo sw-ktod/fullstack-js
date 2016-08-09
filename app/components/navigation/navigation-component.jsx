@@ -85,10 +85,10 @@ export default class NavigationComponent extends React.Component {
         this.context.responseHandler.warning("", (confirmed)=> {
             if (confirmed) {
                 this.context.authServices.handleUserLogout()
-                    .then(()=> {
+                    .then((response)=> {
                         this.context.authServices.removeStoredData('user');
                         this.context.router.push({pathname: '/auth'});
-                        this.context.responseHandler.success("Successfully logged out");
+                        this.context.responseHandler.success(response.message);
                     }
                 );
             }

@@ -46,8 +46,8 @@ export default class UserComponent extends React.Component {
 
     handlePasswordChange(data) {
         this.context.userServices.changePassword(data)
-            .then(()=> {
-                this.context.responseHandler.success("Successfully updated password.");
+            .then((response)=> {
+                this.context.responseHandler.success(response.message);
             }, (err)=> {
                 this.context.responseHandler.error(err);
             });
@@ -55,10 +55,10 @@ export default class UserComponent extends React.Component {
 
     handleUserEdit(data) {
         this.context.userServices.edit(data)
-            .then((result)=> {
+            .then((response)=> {
                 let user = this.context.authServices.getStoredData('user').account;
 
-                let editedUser = result;
+                let editedUser = response.user;
                 if(user.username === editedUser.username){
                     editedUser.id = user.id;
                     this.context.authServices.storeData('user', {account: editedUser});
@@ -69,7 +69,7 @@ export default class UserComponent extends React.Component {
                 }else{
                     this.context.router.push('/users');
                 }
-                this.context.responseHandler.success("Successfully updated user.")
+                this.context.responseHandler.success(response.message);
             }, (err)=> {
                 this.context.responseHandler.error(err);
             });
@@ -80,12 +80,12 @@ export default class UserComponent extends React.Component {
             (confirmed)=>{
                 if(confirmed){
                     this.context.userServices.removeUser(userId)
-                        .then(()=> {
+                        .then((response)=> {
                             let users = this.state.data.filter((user)=>{
                                 return user.id !== userId;
                             });
                             this.setState({data:users})
-                            this.context.responseHandler.success("Successfully deleted user.")
+                            this.context.responseHandler.success(response.message);
                         }, (err)=> {
                             this.context.responseHandler.error(err);
                     })

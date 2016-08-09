@@ -13,7 +13,7 @@ exports.findAll = function (request, reply) {
     }
     this.db.all(sqlQuery, qParams, function (err, results) {
         if (err) throw err;
-        reply(results);
+        return reply(results);
     });
 };
 exports.findRelatedPostsByUsername = function (request, reply) {
@@ -26,10 +26,10 @@ exports.findRelatedPostsByUsername = function (request, reply) {
         function (err, result) {
             if (err) throw err;
             if (typeof result !== 'undefined') {
-                reply(result);
+                return reply(result);
             }
             else {
-                reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
+                return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
             }
         }
     )
@@ -40,10 +40,10 @@ exports.find = function (request, reply) {
         function (err, result) {
             if (err) throw err;
             if (typeof result !== 'undefined') {
-                reply(result);
+                return reply(result);
             }
             else {
-                reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
+                return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
             }
         }
     );
@@ -65,7 +65,7 @@ exports.create = function (request, reply) {
             post.receiverUsername = postReceiver;
             const uri = request.raw.req.url + '/' + post.id;
             console.log('Created: ', uri);
-            reply(post).created(uri);
+            return reply({status: 201, message: "Successfully created post", post: post}).created(uri);
         });
 };
 exports.edit = function (request, reply) {
@@ -77,7 +77,7 @@ exports.edit = function (request, reply) {
                 if (err) throw err;
                 if (this.changes > 0) {
                     console.log('Updated: ', request.raw.req.url + `/${post.id}`);
-                    return reply(post);
+                    return reply({status: 200, message: "Successfully edited post", post: post});
                 }
                 return reply(Boom.notFound(`Post with id: ${post.id} was not found`));
             })
@@ -92,7 +92,7 @@ exports.edit = function (request, reply) {
                             if (err) throw err;
                             if (this.changes > 0) {
                                 console.log('Updated: ', request.raw.req.url + `/${post.id}`);
-                                return reply(post);
+                                return reply({status: 200, message: "Successfully edited post", post: post});
                             }
                             return reply(Boom.notFound(`Post with id: ${post.id} was not found`));
                         })
@@ -117,7 +117,7 @@ exports.remove = function (request, reply) {
                 if (err) throw err;
                 if (this.changes > 0) {
                     console.log('Deleted: ', request.raw.req.url);
-                    return reply(`Post ${request.params.postId} was deleted successfully.`);
+                    return reply({status: 200, message: "Successfully deleted post"});
                 } else {
                     return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
                 }
@@ -139,7 +139,7 @@ exports.remove = function (request, reply) {
                             if (err) throw err;
                             if (this.changes > 0) {
                                 console.log('Deleted: ', request.raw.req.url);
-                                return reply(`Post ${request.params.postId} was deleted successfully.`);
+                                return reply({status: 200, message: "Successfully deleted post"});
                             }
                             return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
 
@@ -151,7 +151,7 @@ exports.remove = function (request, reply) {
                                 if (err) throw err;
                                 if (this.changes > 0) {
                                     console.log('Removed link: ', request.raw.req.url);
-                                    return reply(`Post ${request.params.postId} link was removed successfully.`);
+                                    return reply({status: 200, message: "Successfully deleted post"});
                                 }
                                 return reply(Boom.notFound(`Post with Id=${request.params.postId} not found.`));
                             });
@@ -161,5 +161,4 @@ exports.remove = function (request, reply) {
                 }
             });
     }
-
 };

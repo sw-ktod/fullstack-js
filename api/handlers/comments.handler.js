@@ -51,7 +51,7 @@ exports.edit = function (request, reply) {
             (err)=> {
                 if (err) throw err;
                 console.log('Updated: ', request.raw.req.url + `/${comment.id}`);
-                return reply(comment);
+                return reply({status: 200, message:"Successfully edited comment", comment:comment});
             })
     } else {
         this.db.get('SELECT authorUsername, postId FROM comments WHERE id = ?', [comment.id],
@@ -73,7 +73,7 @@ exports.edit = function (request, reply) {
                                                 if (err) throw err;
 
                                                 console.log('Updated: ', request.raw.req.url + `/${comment.id}`);
-                                                return reply(comment);
+                                                return reply({status: 200, message:"Successfully edited comment", comment:comment});
                                             })
                                     }
                                 }
@@ -85,7 +85,7 @@ exports.edit = function (request, reply) {
                             (err)=> {
                                 if (err) throw err;
                                 console.log('Updated: ', request.raw.req.url + `/${comment.id}`);
-                                return reply(comment);
+                                return reply({status: 200, message:"Successfully edited comment", comment:comment});
                             })
                     }
 
@@ -101,7 +101,7 @@ exports.remove = function (request, reply) {
             (err) => {
                 if (err) throw err;
                 console.log('Deleted: ', request.raw.req.url);
-                return reply(`Comment ${request.params.commentId} was deleted successfully.`);
+                return reply({status: 200, message:"Successfully deleted comment"});
             }
         );
     } else {
@@ -122,7 +122,7 @@ exports.remove = function (request, reply) {
                                             (err) => {
                                                 if (err) throw err;
                                                 console.log('Deleted: ', request.raw.req.url);
-                                                return reply(`Comment ${request.params.commentId} was deleted successfully.`);
+                                                return reply({status: 200, message:"Successfully deleted comment"});
                                             }
                                         );
                                     }
@@ -134,7 +134,7 @@ exports.remove = function (request, reply) {
                             (err) => {
                                 if (err) throw err;
                                 console.log('Deleted: ', request.raw.req.url);
-                                return reply(`Comment ${request.params.commentId} was deleted successfully.`);
+                                return reply({status: 200, message:"Successfully deleted comment"});
                             }
                         );
                     }

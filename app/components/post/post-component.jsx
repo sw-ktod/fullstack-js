@@ -55,9 +55,9 @@ export default class PostComponent extends React.Component {
             post.receiverUsername = receiverUsername;
         }
         this.context.postServices.submitPost(post)
-            .then((result) => {
+            .then((response) => {
                 let postArray = this.state.posts;
-                postArray.push(result);
+                postArray.push(response.post);
                 postArray = postArray.sort((aPost, bPost)=> {
                     return Date.parse(aPost.date_created) < Date.parse(bPost.date_created);
                 });
@@ -69,16 +69,16 @@ export default class PostComponent extends React.Component {
 
     handlePostUpdate(post) {
         this.context.postServices.editPost(post)
-            .then((result)=> {
+            .then((response)=> {
                 let postArray = this.state.posts;
                 postArray.forEach((post)=> {
-                    if (post.id === result.id) {
-                        postArray[postArray.indexOf(post)].text = result.text;
+                    if (post.id === response.post.id) {
+                        postArray[postArray.indexOf(post)].text = response.post.text;
                         return;
                     }
                 });
                 this.setState({posts: postArray});
-                this.context.responseHandler.success("Successfully updated post.")
+                this.context.responseHandler.success(response.message);
             }, (err)=> {
                 this.context.responseHandler.error(err);
             })
@@ -90,7 +90,7 @@ export default class PostComponent extends React.Component {
             (confirmed) => {
                 if (confirmed) {
                     this.context.postServices.removePost(postId)
-                        .then(()=> {
+                        .then((response)=> {
                             let postArray = this.state.posts.filter((post)=> {
                                 return post.id !== postId;
                             });
@@ -98,7 +98,7 @@ export default class PostComponent extends React.Component {
                                 return comment.postId !== postId;
                             });
                             this.setState({posts: postArray, comments: commentArray});
-                            this.context.responseHandler.success("Successfully deleted post.")
+                            this.context.responseHandler.success(response.message)
                         }, (err)=> {
                             this.context.responseHandler.error(err);
                         })

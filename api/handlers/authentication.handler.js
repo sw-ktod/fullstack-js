@@ -24,11 +24,11 @@ exports.login = function (request, reply) {
                         throw (err);
                     }
                     request.cookieAuth.set({__sess: sessionId});
-                    return reply(result);
+                    return reply({status:200, message: 'Successfully logged in', user:result});
                 });
             }
             else {
-                reply(Boom.badRequest(`Invalid username or password`));
+                return reply(Boom.badRequest(`Invalid username or password`));
             }
         });
 };
@@ -62,7 +62,7 @@ exports.register = function (request, reply) {
                     };
                     const uri = request.raw.req.url + '/' + user.id;
                     console.log('Created: ', uri);
-                    return reply(user).created(uri);
+                    return reply({status:200, message: 'Successfully registered', user:user});
                 });
         });
 };
@@ -92,7 +92,7 @@ exports.changePassword = function (request, reply) {
             const uri = request.raw.req.url + '/' + request.auth.credentials.id;
             console.log('Updated: ', uri);
             if (this.changes > 0) {
-                return reply('Successfully changed password');
+                return reply({status:200, message: 'Successfully updated password'});
             }
             return reply(Boom.badRequest('Invalid password'));
         }
@@ -101,7 +101,7 @@ exports.changePassword = function (request, reply) {
 
 exports.logout = function (request, reply) {
     request.server.app.cache.drop(request.auth.artifacts.__sess);
-    return reply("Successfully logged out");
+    return reply({status: 200, message: "Successfully logged out"});
 };
 exports.validateAuthentication = function (request, reply) {
     if (!request.auth.isAuthenticated) {

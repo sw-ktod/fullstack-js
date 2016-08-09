@@ -34,7 +34,7 @@ export default class PasswordChangeForm extends React.Component {
         let newPassword = this.state.newPassword.trim();
         let confirmPassword = this.state.confirmPassword.trim();
 
-        if (!password || !confirmPassword || newPassword !== confirmPassword) {
+        if (!password || !newPassword || !confirmPassword) {
             return;
         }
 
@@ -73,7 +73,7 @@ export default class PasswordChangeForm extends React.Component {
                     <input className="input-sm form-control" type="password" value={this.state.password} id="password"
                            onChange={this.handlePasswordChange}/>
                 </div>
-                <input className="input-sm form-control" type="submit" value="Edit Profile"
+                <input className="input-sm form-control" type="submit" value="Edit Password"
                        onClick={this.handleSubmit}/>
             </form>
         );

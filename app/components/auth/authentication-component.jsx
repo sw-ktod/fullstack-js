@@ -28,12 +28,13 @@ export default class AuthenticationComponent extends React.Component {
                 if (result.role < 1) {
                     delete result.role;
                 }
-                this.context.authServices.storeData("user", {account: result});
+                this.context.authServices.storeData("user", {account: result.user});
                 if (!result.email) {
-                    this.context.router.push({pathname: "/users/" + result.username + "/edit"});
+                    this.context.router.push({pathname: "/users/" + result.user.username + "/edit"});
                 } else {
                     this.context.router.push({pathname: "/"});
                 }
+                this.context.responseHandler.success(result.message);
             }, (err)=> {
                 this.context.responseHandler.error(err);
             });
@@ -42,16 +43,12 @@ export default class AuthenticationComponent extends React.Component {
     onUserRegister(user) {
         this.context.authServices.userRegister(user)
             .then((result)=> {
-                this.context.responseHandler.success(result);
-                this.context.responseHandler.success("Registration successful.");
+                this.context.responseHandler.success(result.message);
 
             }, (err)=> {
                 this.context.responseHandler.error(err);
             });
     }
-
-    //grandAdmin
-    //removeAdmin
 
     componentDidMount() {
         if (this.context.authServices.isAuthenticated()) {

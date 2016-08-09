@@ -65,7 +65,8 @@ exports.edit = function (request, reply) {
                 if(!user.role){
                     delete user.role;
                 }
-                return reply(user);
+                return reply({status:200, message:"Successfully edited user", user:user});
+
             } else {
                 return reply(Boom.badRequest(`An error occurred. User ${username} was not updated.`));
             }
@@ -107,7 +108,8 @@ exports.remove = function (request, reply) {
                     console.log(`User ${request.params.username} removed: `, request.raw.req.url);
                 }
             });
-        return reply(`User ${request.params.username} removed successfully`);
+        return reply({status:200, message:"Successfully removed user"});
+
     } else {
         return reply(Boom.unauthorized('Users are not allowed to remove accounts'))
     }

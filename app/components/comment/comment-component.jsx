@@ -46,12 +46,12 @@ export default class CommentComponent extends React.Component{
         this.context.responseHandler.warning("", (confirmed)=>{
             if(confirmed){
                 this.context.commentServices.deleteComment(commentId)
-                    .then(()=> {
+                    .then((response)=> {
                         let commentArray = this.state.comments.filter((comment)=> {
                             return comment.id !== commentId;
                         });
                         this.setState({comments: commentArray})
-                        this.context.responseHandler.success("Successfully deleted comment.");
+                        this.context.responseHandler.success(response.message);
                     }, (err)=> {
                         this.context.responseHandler.error(err);
                     });
@@ -62,16 +62,16 @@ export default class CommentComponent extends React.Component{
     handleCommentUpdate(comment){
         "use strict";
         this.context.commentServices.updateComment(comment)
-            .then((result)=>{
+            .then((response)=>{
                 let commentArray = this.state.comments;
                 commentArray.forEach((comment)=>{
-                    if(comment.id === result.id){
-                        commentArray[commentArray.indexOf(comment)].text = result.text;
+                    if(comment.id === response.comment.id){
+                        commentArray[commentArray.indexOf(comment)].text = response.comment.text;
                         return;
                     }
                 });
                 this.setState({comments: commentArray});
-                this.context.responseHandler.success("Successfully updated comment.");
+                this.context.responseHandler.success(response.message);
             },(err)=>{
                 this.context.responseHandler.error(err);
             })
