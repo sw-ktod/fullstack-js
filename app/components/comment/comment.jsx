@@ -57,7 +57,7 @@ export default class Comment extends React.Component {
         if(this.state.editMode){
             return (
                 <div className="comment well-sm bs-component col-md-12">
-                    <h4 className="commentAuthor col-md-4">
+                    <h4 className="commentAuthor">
                         <Link to={authorLink}> {this.props.author} </Link>
                     </h4>
                     <input type="text" onChange={this.handleTextChange} value={this.state.text} />

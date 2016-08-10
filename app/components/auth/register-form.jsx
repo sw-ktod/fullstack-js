@@ -34,7 +34,7 @@ export default class UserRegisterForm extends React.Component {
         let password = this.state.password.trim();
         let confirmPassword = this.state.confirmPassword.trim();
 
-        if (!username || !password || !confirmPassword || password !== confirmPassword) {
+        if (!username || !password || !confirmPassword) {
             return;
         }
 

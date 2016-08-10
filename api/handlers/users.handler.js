@@ -12,9 +12,9 @@ exports.findAll = function (request, reply) {
         qParams.push(request.query.username);
     }
     this.db.all(sqlQuery, qParams,
-        function (err, results) {
+        function (err, result) {
             if (err) throw err;
-            return reply(results);
+            return reply({status:200, users:result});
         });
 };
 exports.findByUsername = function (request, reply) {
@@ -22,7 +22,8 @@ exports.findByUsername = function (request, reply) {
         function (err, result) {
             if (err) throw err;
             if (typeof result !== 'undefined') {
-                return reply(result);
+                return reply({status:200, user:result});
+
             }
             return reply(Boom.notFound(`User with Username ${request.params.username} not found.`));
         }

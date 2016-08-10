@@ -102,14 +102,14 @@ export default class UserComponent extends React.Component {
         if (params.username) {
             this.context.userServices.getUserByUsername(params.username)
                 .then((response)=> {
-                    this.setState({user: response});
+                    this.setState({user: response.user});
                     /**
                      * Continuing after we've had the user object
                      */
                     if (this.state.mode === 'default') {
                         this.context.postServices.getUserRelatedPosts(params.username)
                             .then((response)=> {
-                                let dataArray = response.sort((aPost, bPost)=> {
+                                let dataArray = response.posts.sort((aPost, bPost)=> {
                                     return Date.parse(aPost.date_created) < Date.parse(bPost.date_created);
                                 });
                                 this.setState({posts: dataArray})
@@ -118,7 +118,7 @@ export default class UserComponent extends React.Component {
                             });
                         this.context.commentServices.getComments()
                             .then((response)=> {
-                                this.setState({comments: response});
+                                this.setState({comments: response.comments});
                             }, (err)=> {
                                 this.context.responseHandler.error(err);
                             });
@@ -139,7 +139,7 @@ export default class UserComponent extends React.Component {
             this.context.userServices.getUsers()
                 .then((response)=> {
                     this.setState({
-                        data: response,
+                        data: response.users,
                         user: undefined,
                         posts: [],
                         comments: [],
